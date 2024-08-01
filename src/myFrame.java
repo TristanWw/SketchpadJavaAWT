@@ -5,9 +5,12 @@ public class myFrame extends Frame {
     private myCanvas canvas;
     private Panel buttonPanel;
     private Button straightLineButton;
+    private Button scribbledButton;
 
     private boolean isDrawingLine;
     private Point startPoint, endPoint;
+    private boolean isDrawingScribbledLine;
+    private ScribbledLine sLine;
 
     public myFrame() {
         setSize(800, 600);
@@ -19,6 +22,8 @@ public class myFrame extends Frame {
         // Create button
         straightLineButton = new Button("Straight Line");
         buttonPanel.add(straightLineButton);
+        scribbledButton = new Button("Scribbled Line");
+        buttonPanel.add(scribbledButton);
 
         // Add button panel to the left side of the frame
         add(buttonPanel, BorderLayout.WEST);
@@ -34,12 +39,37 @@ public class myFrame extends Frame {
             }
         });
 
-        // set up listeners
-        canvas.addMouseListener(new myMouseHandler()); // Attach to canvas
-        canvas.addMouseMotionListener(new myMouseMotionHandler()); // Attach to canvas
+        // Add action listeners to buttons
+        straightLineButton.addActionListener(new ButtonClickListener());
+        scribbledButton.addActionListener(new ButtonClickListener());
     }
 
-    public class myMouseHandler extends MouseAdapter {
+    private class ButtonClickListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == straightLineButton) {
+                isDrawingLine = true; // Enable drawing straight lines
+                isDrawingScribbledLine = false;
+                for (MouseListener l : canvas.getMouseListeners()) {
+                    canvas.removeMouseListener(l);
+                }
+                // set up listeners
+                canvas.addMouseListener(new myStraightLineMouseHandler()); // Attach to canvas
+                canvas.addMouseMotionListener(new myStraightLineMouseMotionHandler()); // Attach to canvas
+            } else if (e.getSource() == scribbledButton) {
+                isDrawingLine = false; // Enable drawing scribbled lines
+                isDrawingScribbledLine = true;
+                for (MouseListener l : canvas.getMouseListeners()) {
+                    canvas.removeMouseListener(l);
+                }
+                // set up listeners
+                canvas.addMouseListener(new myScribbledLineMouseHandler()); // Attach to canvas
+                canvas.addMouseMotionListener(new myScribbledLineMouseMotionHandler()); // Attach to canvas
+            }
+        }
+    }
+
+    public class myStraightLineMouseHandler extends MouseAdapter {
         @Override
         public void mousePressed(MouseEvent e) {
             isDrawingLine = true;
@@ -56,11 +86,40 @@ public class myFrame extends Frame {
         }
     }
 
-    public class myMouseMotionHandler extends MouseMotionAdapter {
+    public class myStraightLineMouseMotionHandler extends MouseMotionAdapter {
         @Override
         public void mouseDragged(MouseEvent e) {
             if (isDrawingLine) {
                 endPoint = e.getPoint();
+                Line dashLine = new Line(startPoint, endPoint);
+                dashLine.draw(getGraphics());
+                canvas.repaint();
+            }
+        }
+    }
+
+    public class myScribbledLineMouseHandler extends MouseAdapter {
+        @Override
+        public void mousePressed(MouseEvent e) {
+            isDrawingScribbledLine = true;
+            sLine = new ScribbledLine();
+            sLine.addPoints(e.getPoint());
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            isDrawingScribbledLine = false;
+            sLine.addPoints(e.getPoint());
+            canvas.addObj(sLine);
+            canvas.repaint();
+        }
+    }
+
+    public class myScribbledLineMouseMotionHandler extends MouseMotionAdapter {
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            if (isDrawingScribbledLine) {
+                sLine.addPoints(e.getPoint());
                 canvas.repaint();
             }
         }
