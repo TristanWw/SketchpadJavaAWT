@@ -22,3 +22,41 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# other gitignore files
+/.metadata/
+/bin
+
+# Ignore build directory
+/build
+
+# Ignore compiled Java classes
+*.class
+
+# Ignore package files
+*.jar
+*.war
+*.ear
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+
+# Ignore test binary files
+/test/bin/
+
+# Ignore IntelliJ IDEA project files
+/.idea
+*.iml
+
+# Ignore Eclipse project files
+/.project
+/.classpath
+/.settings/
+
+# Ignore VSCode project files
+/.vscode/
+
+# Ignore macOS system files
+.DS_Store
+
