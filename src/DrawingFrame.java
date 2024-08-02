@@ -1,4 +1,4 @@
-package t11.t6;
+package t12.t6;
 
 import javax.swing.*;
 import java.awt.*;
@@ -108,6 +108,19 @@ class DrawingFrame extends JFrame implements ActionListener {
         JButton pasteButton = new JButton("Paste");
         pasteButton.addActionListener(e -> drawPanel.setMode(DrawingMode.PASTE));
         toolbar.add(pasteButton);
+
+
+        // Add OPEN_POLYGON and CLOSED_POLYGON buttons
+        JButton openPolygonButton = new JButton("Open Polygon");
+        openPolygonButton.addActionListener(e -> drawPanel.setMode(DrawingMode.OPEN_POLYGON));
+        toolbar.add(openPolygonButton);
+
+        JButton closedPolygonButton = new JButton("Closed Polygon");
+        closedPolygonButton.addActionListener(e -> drawPanel.setMode(DrawingMode.CLOSED_POLYGON));
+        toolbar.add(closedPolygonButton);
+
+
+
     }
 
     @Override

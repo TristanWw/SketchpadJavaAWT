@@ -1,4 +1,4 @@
-package t11.t6;
+package t12.t6;
 
 import javax.swing.*;
 import java.awt.*;
