@@ -6,11 +6,13 @@ public class myFrame extends Frame {
     private Panel buttonPanel;
     private Button straightLineButton;
     private Button scribbledButton;
+    private Button selectModeButton;
 
     private boolean isDrawingLine;
     private Point startPoint, endPoint;
     private boolean isDrawingScribbledLine;
     private ScribbledLine sLine;
+    private boolean hasSelectedObj;
 
     public myFrame() {
         setSize(800, 600);
@@ -24,6 +26,8 @@ public class myFrame extends Frame {
         buttonPanel.add(straightLineButton);
         scribbledButton = new Button("Scribbled Line");
         buttonPanel.add(scribbledButton);
+        selectModeButton = new Button("Select Mode");
+        buttonPanel.add(selectModeButton);
 
         // Add button panel to the left side of the frame
         add(buttonPanel, BorderLayout.WEST);
@@ -42,6 +46,7 @@ public class myFrame extends Frame {
         // Add action listeners to buttons
         straightLineButton.addActionListener(new ButtonClickListener());
         scribbledButton.addActionListener(new ButtonClickListener());
+        selectModeButton.addActionListener(new ButtonClickListener());
     }
 
     private class ButtonClickListener implements ActionListener {
@@ -65,6 +70,15 @@ public class myFrame extends Frame {
                 // set up listeners
                 canvas.addMouseListener(new myScribbledLineMouseHandler()); // Attach to canvas
                 canvas.addMouseMotionListener(new myScribbledLineMouseMotionHandler()); // Attach to canvas
+            } else if (e.getSource() == selectModeButton) {
+                isDrawingLine = false; // Enable drawing scribbled lines
+                isDrawingScribbledLine = false;
+                for (MouseListener l : canvas.getMouseListeners()) {
+                    canvas.removeMouseListener(l);
+                }
+                // set up listeners
+                canvas.addMouseListener(new mySelectModeMouseHandler()); // Attach to canvas
+                canvas.addMouseMotionListener(new mySelectModeMouseMotionHandler()); // Attach to canvas
             }
         }
     }
@@ -120,6 +134,41 @@ public class myFrame extends Frame {
         public void mouseDragged(MouseEvent e) {
             if (isDrawingScribbledLine) {
                 sLine.addPoints(e.getPoint());
+                canvas.repaint();
+            }
+        }
+    }
+
+    public class mySelectModeMouseHandler extends MouseAdapter {
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (canvas.select(e.getPoint())) {
+                hasSelectedObj = true;
+                startPoint = e.getPoint();
+            }
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            hasSelectedObj = false;
+            endPoint = e.getPoint();
+            // calculate the dx dy
+            baseObj o = canvas.getSelectedObj();
+            if (o != null)
+                o.translate(endPoint.x - startPoint.x, endPoint.y - startPoint.y);
+            canvas.repaint();
+        }
+    }
+
+    public class mySelectModeMouseMotionHandler extends MouseMotionAdapter {
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            if (hasSelectedObj) {
+                endPoint = e.getPoint();
+                // calculate the dx dy
+                // baseObj o = canvas.getSelectedObj();
+                // if (o != null)
+                // o.translate(endPoint.x - startPoint.x, endPoint.y - startPoint.y);
                 canvas.repaint();
             }
         }
