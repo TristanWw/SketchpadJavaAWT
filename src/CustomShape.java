@@ -1,3 +1,5 @@
+package t11.t6;
+
 import java.awt.*;
 import java.awt.geom.*;
 
@@ -62,5 +64,6 @@ class CustomShape {
             transform.translate(dx, dy);
             shape = path.createTransformedShape(transform);
         }
+        System.out.println("New shape: " + shape.getBounds());
     }
 }
