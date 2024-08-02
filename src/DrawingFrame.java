@@ -4,11 +4,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 class DrawingFrame extends JFrame implements ActionListener {
-    private static final int SMALL = 4;
-    private static final int MEDIUM = 8;
-    private static final int LARGE = 10;
+    //private static final int SMALL = 4;
+    //private static final int MEDIUM = 8;
+    //private static final int LARGE = 10;
 
-    private DrawingPanel drawPanel = new DrawingPanel(Color.BLACK, SMALL);
+    private DrawingPanel drawPanel = new DrawingPanel(Color.BLACK);
     private JToolBar toolbar = new JToolBar();
 
     DrawingFrame() {
@@ -27,15 +27,15 @@ class DrawingFrame extends JFrame implements ActionListener {
     private void setupMenu() {
         JMenuBar mainMenuBar = new JMenuBar();
         JMenu menu1 = new JMenu("File");
-        JMenu menu2 = new JMenu("Size");
+        //JMenu menu2 = new JMenu("Size");
         JMenu menu3 = new JMenu("Color");
         JMenu menu4 = new JMenu("Help");
 
         JMenuItem clear = new JMenuItem("Clear");
         JMenuItem exit = new JMenuItem("Exit");
-        JMenuItem small = new JMenuItem("Small");
-        JMenuItem medium = new JMenuItem("Medium");
-        JMenuItem large = new JMenuItem("Large");
+        //JMenuItem small = new JMenuItem("Small");
+        //JMenuItem medium = new JMenuItem("Medium");
+        //JMenuItem large = new JMenuItem("Large");
         JMenuItem blackMenu = new JMenuItem("Black");
         JMenuItem greenMenu = new JMenuItem("Green");
         JMenuItem yellowMenu = new JMenuItem("Yellow");
@@ -45,9 +45,9 @@ class DrawingFrame extends JFrame implements ActionListener {
 
         menu1.add(clear);
         menu1.add(exit);
-        menu2.add(small);
-        menu2.add(medium);
-        menu2.add(large);
+        //menu2.add(small);
+        //menu2.add(medium);
+        //menu2.add(large);
         menu3.add(blackMenu);
         menu3.add(greenMenu);
         menu3.add(yellowMenu);
@@ -57,9 +57,9 @@ class DrawingFrame extends JFrame implements ActionListener {
 
         clear.addActionListener(this);
         exit.addActionListener(this);
-        small.addActionListener(this);
-        medium.addActionListener(this);
-        large.addActionListener(this);
+        //small.addActionListener(this);
+        //medium.addActionListener(this);
+        //large.addActionListener(this);
         blackMenu.addActionListener(this);
         greenMenu.addActionListener(this);
         yellowMenu.addActionListener(this);
@@ -69,7 +69,7 @@ class DrawingFrame extends JFrame implements ActionListener {
 
         setJMenuBar(mainMenuBar);
         mainMenuBar.add(menu1);
-        mainMenuBar.add(menu2);
+        //mainMenuBar.add(menu2);
         mainMenuBar.add(menu3);
         mainMenuBar.add(menu4);
     }
@@ -106,6 +106,19 @@ class DrawingFrame extends JFrame implements ActionListener {
         JButton pasteButton = new JButton("Paste");
         pasteButton.addActionListener(e -> drawPanel.setMode(DrawingMode.PASTE));
         toolbar.add(pasteButton);
+        
+        JButton undoButton = new JButton("Undo");
+        /*undoButton.addActionListener(e -> {
+            drawPanel
+            if(mode == DrawingMode.SELECT) {
+                
+            }
+        });*/
+        toolbar.add(undoButton);
+        
+        JButton redoButton = new JButton("Redo");
+        //redoButton.addActionListener(e -> drawPanel.setMode(DrawingMode.REDO));
+        toolbar.add(redoButton);
     }
 
     @Override
@@ -116,7 +129,7 @@ class DrawingFrame extends JFrame implements ActionListener {
                 System.exit(0);
                 break;
             case "About":
-                JOptionPane.showMessageDialog(null, "Drawing Program by aa aaa");
+                JOptionPane.showMessageDialog(null, "Drawing Program by a");
                 break;
             case "Clear":
                 drawPanel.clear();
@@ -136,15 +149,15 @@ class DrawingFrame extends JFrame implements ActionListener {
             case "Blue":
                 drawPanel.setShapeColor(Color.BLUE);
                 break;
-            case "Small":
-                drawPanel.setShapeSize(SMALL);
-                break;
-            case "Medium":
-                drawPanel.setShapeSize(MEDIUM);
-                break;
-            case "Large":
-                drawPanel.setShapeSize(LARGE);
-                break;
+            //case "Small":
+                //drawPanel.setShapeSize(SMALL);
+                //break;
+            //case "Medium":
+                //drawPanel.setShapeSize(MEDIUM);
+                //break;
+            //case "Large":
+                //drawPanel.setShapeSize(LARGE);
+                //break;
         }
     }
 }

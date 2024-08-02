@@ -30,9 +30,9 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
     private CustomShape clipboardShape = null;
     private boolean isCutOperation = false;
 
-    DrawingPanel(Color color, int size) {
+    DrawingPanel(Color color) {
         setShapeColor(color);
-        setShapeSize(size);
+        //setShapeSize(size);
         addMouseMotionListener(this);
         addMouseListener(this);
         setBackground(Color.WHITE);
@@ -88,7 +88,54 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
         drawingPolygon = false;
         repaint();
     }
-
+    
+    void switchCurrentShape(Point startPoint,Point endPoint){
+        switch (mode) {
+            case LINE:
+                currentShape = new CustomShape(new Line2D.Double(startPoint, endPoint), shapeColor);
+                break;
+            case RECTANGLE:
+                currentShape = new CustomShape(new Rectangle2D.Double(
+                        Math.min(startPoint.x, endPoint.x),
+                        Math.min(startPoint.y, endPoint.y),
+                        Math.abs(startPoint.x - endPoint.x),
+                        Math.abs(startPoint.y - endPoint.y)
+                ), shapeColor);
+                break;
+            case ELLIPSE:
+                currentShape = new CustomShape(new Ellipse2D.Double(
+                        Math.min(startPoint.x, endPoint.x),
+                        Math.min(startPoint.y, endPoint.y),
+                        Math.abs(startPoint.x - endPoint.x),
+                        Math.abs(startPoint.y - endPoint.y)
+                ), shapeColor);
+                break;
+            case SQUARE:
+                int side = Math.min(Math.abs(startPoint.x - endPoint.x), Math.abs(startPoint.y - endPoint.y));
+                currentShape = new CustomShape(new Rectangle2D.Double(
+                        Math.min(startPoint.x, startPoint.x + side),
+                        Math.min(startPoint.y, startPoint.y + side),
+                        side,
+                        side
+                ), shapeColor);
+                break;
+            case CIRCLE:
+                int diameter = (int) Math.round(startPoint.distance(endPoint));
+                currentShape = new CustomShape(new Ellipse2D.Double(
+                        startPoint.x - diameter,
+                        startPoint.y - diameter,
+                        diameter * 2,
+                        diameter * 2
+                ), shapeColor);
+                break;
+            default:
+                break;
+        }
+        shapes.add(currentShape);
+        currentShape = null;
+        repaint();
+    }
+    
     @Override
     public void mouseDragged(MouseEvent e) {
         if (mode == DrawingMode.SELECT && selectedShape != null) {
@@ -99,48 +146,8 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
             repaint();
         } else if (mode != DrawingMode.SELECT && mode != DrawingMode.OPEN_POLYGON && mode != DrawingMode.CLOSED_POLYGON) {
             Point endPoint = e.getPoint();
-            switch (mode) {
-                case LINE:
-                    currentShape = new CustomShape(new Line2D.Double(startPoint, endPoint), shapeColor);
-                    break;
-                case RECTANGLE:
-                    currentShape = new CustomShape(new Rectangle2D.Double(
-                            Math.min(startPoint.x, endPoint.x),
-                            Math.min(startPoint.y, endPoint.y),
-                            Math.abs(startPoint.x - endPoint.x),
-                            Math.abs(startPoint.y - endPoint.y)
-                    ), shapeColor);
-                    break;
-                case ELLIPSE:
-                    currentShape = new CustomShape(new Ellipse2D.Double(
-                            Math.min(startPoint.x, endPoint.x),
-                            Math.min(startPoint.y, endPoint.y),
-                            Math.abs(startPoint.x - endPoint.x),
-                            Math.abs(startPoint.y - endPoint.y)
-                    ), shapeColor);
-                    break;
-                case SQUARE:
-                    int side = Math.min(Math.abs(startPoint.x - endPoint.x), Math.abs(startPoint.y - endPoint.y));
-                    currentShape = new CustomShape(new Rectangle2D.Double(
-                            Math.min(startPoint.x, startPoint.x + side),
-                            Math.min(startPoint.y, startPoint.y + side),
-                            side,
-                            side
-                    ), shapeColor);
-                    break;
-                case CIRCLE:
-                    int diameter = (int) Math.round(startPoint.distance(endPoint));
-                    currentShape = new CustomShape(new Ellipse2D.Double(
-                            startPoint.x - diameter,
-                            startPoint.y - diameter,
-                            diameter * 2,
-                            diameter * 2
-                    ), shapeColor);
-                    break;
-                default:
-                    break;
-            }
-            repaint();
+            shapes.remove(shapes.size()-1);
+            switchCurrentShape(startPoint,endPoint);
         }
     }
 
@@ -149,11 +156,11 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
         if (mode == DrawingMode.SELECT && selectedShape != null) {
             selectedShape = null;
             repaint();
-        } else if (mode != DrawingMode.SELECT && currentShape != null) {
-            shapes.add(currentShape);
-            currentShape = null;
-            repaint();
-        }
+        } //else if (mode != DrawingMode.SELECT && currentShape != null) {
+            //shapes.add(currentShape);
+            //currentShape = null;
+            //repaint();
+        //}
     }
 
     @Override
@@ -216,8 +223,11 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
                     break;
                 }
             }
-        } else if (mode == DrawingMode.PASTE) {
-            startPoint = e.getPoint();
+        } //else if (mode == DrawingMode.PASTE) {
+           // startPoint = e.getPoint();
+        //}
+        else if (mode!=DrawingMode.COPY && mode!=DrawingMode.CUT && mode!=DrawingMode.PASTE){ // might need changes
+            switchCurrentShape(startPoint,startPoint);
         }
     }
 
