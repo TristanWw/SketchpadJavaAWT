@@ -120,8 +120,8 @@ class DrawingFrame extends JFrame implements ActionListener {
         
         JButton undoButton = new JButton("Undo");
         undoButton.addActionListener(e -> {
-            if (drawPanel.historyIndex>-1){
-                DrawingMode temp = drawPanel.modeHistory.get(drawPanel.historyIndex);
+            if (drawPanel.history.index>-1){
+                DrawingMode temp = drawPanel.history.historyLine.get(drawPanel.history.index).modeChanged;
                 if(temp == DrawingMode.SELECT) {
                 }else if(temp == DrawingMode.COPY){
                 }else if(temp == DrawingMode.CUT){
@@ -129,7 +129,7 @@ class DrawingFrame extends JFrame implements ActionListener {
                 }else{
                     //System.out.println(drawPanel.modeHistory.get(drawPanel.modeHistory.size()-1));
                     drawPanel.shapes.remove(drawPanel.shapes.size()-1);
-                    drawPanel.historyIndex--;
+                    drawPanel.history.index--;
                     drawPanel.repaint();
                 }
             }
@@ -138,7 +138,23 @@ class DrawingFrame extends JFrame implements ActionListener {
         toolbar.add(undoButton);
         
         JButton redoButton = new JButton("Redo");
-        //redoButton.addActionListener(e -> drawPanel.setMode(DrawingMode.REDO));
+        redoButton.addActionListener(e -> {
+            if (drawPanel.history.index<drawPanel.history.historyLine.size()-1){
+                DrawingMode temp = drawPanel.history.historyLine.get(drawPanel.history.index+1).modeChanged;
+                if(temp == DrawingMode.SELECT) {
+                }else if(temp == DrawingMode.COPY){
+                }else if(temp == DrawingMode.CUT){
+                }else if(temp == DrawingMode.PASTE){
+                }else{
+                    //System.out.println(drawPanel.modeHistory.get(drawPanel.modeHistory.size()-1));
+                    drawPanel.shapes.add(drawPanel.history.historyLine.get(drawPanel.history.index+1).shapeChanged);
+                    drawPanel.history.index++;
+                    drawPanel.repaint();
+                }
+            }
+            
+        });
+        
         toolbar.add(redoButton);
     }
 

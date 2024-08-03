@@ -25,13 +25,27 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
     private boolean drawingPolygon = false;
     private boolean isDrawingCircle = false;
     private Point circleCenter;
+    public  History history = new History();
+    
     public  List<CustomShape> shapesChanged = new ArrayList<>();
     public  ArrayList<DrawingMode> modeHistory = new ArrayList<>();
-    public  int historyIndex=-1;
+    
 
     private CustomShape clipboardShape = null;
     private boolean isCutOperation = false;
-
+    
+    class History{
+        int index=-1;
+        
+        class HistoryInstance {
+            CustomShape shapeChanged; DrawingMode modeChanged;
+            HistoryInstance(DrawingMode m, CustomShape s){
+                modeChanged=m; index++;
+                if(m!=DrawingMode.SELECT&&m!=DrawingMode.COPY&&m!=DrawingMode.CUT&&m!=DrawingMode.PASTE){shapeChanged=s;}}
+        }
+        public  ArrayList<HistoryInstance> historyLine = new ArrayList<HistoryInstance>();
+    }
+    
     DrawingPanel(Color color) {
         setShapeColor(color);
         //setShapeSize(size);
@@ -133,9 +147,10 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
             default:
                 break;
         }
-        shapes.add(currentShape);
+        if(status!="Released"){shapes.add(currentShape);}
+        //if (status=="Pressed"){history.historyLine.add(history.new HistoryInstance(mode,currentShape) );}
+        if (status=="Released"){history.historyLine.add(history.new HistoryInstance(mode,currentShape));}
         currentShape = null;
-        if (status=="Pressed"){modeHistory.add(mode);historyIndex++;}
         repaint();
     }
     
@@ -164,7 +179,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
             shapes.add(currentShape);
             currentShape = null;
             repaint();
-        }
+        }else if(mode!=DrawingMode.SELECT&&mode!=DrawingMode.COPY&&mode!=DrawingMode.CUT&&mode!=DrawingMode.PASTE){switchCurrentShape(startPoint,e.getPoint(),"Released");}}
 
 //        else if (mode == DrawingMode.PASTE && clipboardShape != null) {
 //            Point endPoint = e.getPoint();
@@ -182,7 +197,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
 //                repaint();
 //            }
 //        }
-    } 
+    
     
 
     @Override
