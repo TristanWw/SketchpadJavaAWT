@@ -9,11 +9,13 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
 enum DrawingMode {
     CIRCLE, LINE, RECTANGLE, ELLIPSE, SELECT, SQUARE, OPEN_POLYGON, CLOSED_POLYGON, COPY, CUT, PASTE}
 
-class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener {
+class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener, Serializable {
+    private static final long SerialVerionUID = 1L;
     private int shapeSize;
     private Color shapeColor;
     public  DrawingMode mode = DrawingMode.CIRCLE;
@@ -34,10 +36,12 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
     private CustomShape clipboardShape = null;
     private boolean isCutOperation = false;
     
-    class History{
+    class History implements Serializable {
+        private static final long SerialVerionUID = 1L;
         int index=-1;
         
-        class HistoryInstance {
+        class HistoryInstance implements Serializable {
+            private static final long SerialVerionUID = 1L;
             CustomShape shapeChanged; DrawingMode modeChanged;
             HistoryInstance(DrawingMode m, CustomShape s){
                 modeChanged=m; index++;
