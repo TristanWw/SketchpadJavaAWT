@@ -27,8 +27,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
     private Point circleCenter;
     public  History history = new History();
     
-    public  List<CustomShape> shapesChanged = new ArrayList<>();
-    public  ArrayList<DrawingMode> modeHistory = new ArrayList<>();
+    
     
 
     private CustomShape clipboardShape = null;
@@ -105,7 +104,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
         repaint();
     }
     
-    void switchCurrentShape(Point startPoint,Point endPoint,String status){
+    void drawCurrentShape(Point startPoint,Point endPoint,String status){
         switch (mode) {
             case LINE:
                 currentShape = new CustomShape(new Line2D.Double(startPoint, endPoint), shapeColor);
@@ -165,7 +164,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
         } else if (mode != DrawingMode.SELECT && mode != DrawingMode.OPEN_POLYGON && mode != DrawingMode.CLOSED_POLYGON) {
             Point endPoint = e.getPoint();
             shapes.remove(shapes.size()-1);
-            switchCurrentShape(startPoint,endPoint,"Dragged");
+            drawCurrentShape(startPoint,endPoint,"Dragged");
         }
     }
 
@@ -179,7 +178,8 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
             shapes.add(currentShape);
             currentShape = null;
             repaint();
-        }else if(mode!=DrawingMode.SELECT&&mode!=DrawingMode.COPY&&mode!=DrawingMode.CUT&&mode!=DrawingMode.PASTE){switchCurrentShape(startPoint,e.getPoint(),"Released");}}
+        }else if(mode!=DrawingMode.SELECT&&mode!=DrawingMode.COPY&&mode!=DrawingMode.CUT&&mode!=DrawingMode.PASTE&&mode!=DrawingMode.OPEN_POLYGON &&mode!=DrawingMode.CLOSED_POLYGON){drawCurrentShape(startPoint,e.getPoint(),"Released");}
+    }
 
 //        else if (mode == DrawingMode.PASTE && clipboardShape != null) {
 //            Point endPoint = e.getPoint();
@@ -268,8 +268,8 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
         } //else if (mode == DrawingMode.PASTE) {
            // startPoint = e.getPoint();
         //}
-        else if (mode!=DrawingMode.COPY && mode!=DrawingMode.CUT && mode!=DrawingMode.PASTE){ // might need changes
-            switchCurrentShape(startPoint,startPoint,"Pressed");
+        else if (mode!=DrawingMode.COPY && mode!=DrawingMode.CUT && mode!=DrawingMode.PASTE&&mode!=DrawingMode.OPEN_POLYGON &&mode!=DrawingMode.CLOSED_POLYGON){ // might need changes
+            drawCurrentShape(startPoint,startPoint,"Pressed");
         }
     }
 
