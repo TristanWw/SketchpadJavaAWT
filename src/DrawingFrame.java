@@ -2,12 +2,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 
 class DrawingFrame extends JFrame implements ActionListener {
     //private static final int SMALL = 4;
     //private static final int MEDIUM = 8;
     //private static final int LARGE = 10;
-
     private DrawingPanel drawPanel = new DrawingPanel(Color.BLACK);
     private JToolBar toolbar = new JToolBar();
 
@@ -33,6 +38,8 @@ class DrawingFrame extends JFrame implements ActionListener {
 
         JMenuItem clear = new JMenuItem("Clear");
         JMenuItem exit = new JMenuItem("Exit");
+        JMenuItem save = new JMenuItem("Save");
+        JMenuItem load = new JMenuItem("Load");
         //JMenuItem small = new JMenuItem("Small");
         //JMenuItem medium = new JMenuItem("Medium");
         //JMenuItem large = new JMenuItem("Large");
@@ -45,6 +52,8 @@ class DrawingFrame extends JFrame implements ActionListener {
 
         menu1.add(clear);
         menu1.add(exit);
+        menu1.add(save);
+        menu1.add(load);
         //menu2.add(small);
         //menu2.add(medium);
         //menu2.add(large);
@@ -57,6 +66,8 @@ class DrawingFrame extends JFrame implements ActionListener {
 
         clear.addActionListener(this);
         exit.addActionListener(this);
+        save.addActionListener(this);
+        load.addActionListener(this);
         //small.addActionListener(this);
         //medium.addActionListener(this);
         //large.addActionListener(this);
@@ -171,6 +182,14 @@ class DrawingFrame extends JFrame implements ActionListener {
             case "Clear":
                 drawPanel.clear();
                 break;
+            case "Save":
+                // Serialize the object and save to a file
+                saveToFile();
+                break;
+            case "Load":
+                // Load from the file and substitute the object
+                loadFromFile();
+                break;
             case "Red":
                 drawPanel.setShapeColor(Color.RED);
                 break;
@@ -195,6 +214,63 @@ class DrawingFrame extends JFrame implements ActionListener {
             //case "Large":
                 //drawPanel.setShapeSize(LARGE);
                 //break;
+        }
+    }
+
+    private void saveToFile() {
+        // Create a file chooser
+        JFileChooser fileChooser = new JFileChooser();
+
+        // Show the save dialog
+        int option = fileChooser.showSaveDialog(this);
+
+        if (option == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            try (FileOutputStream fileOut = new FileOutputStream(file); ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+                out.writeObject(drawPanel); // Assuming drawPanel is Serializable
+                System.out.println("File saved: " + file.getAbsolutePath());
+            } catch (IOException i) {
+                i.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error saving file: " + i.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            System.out.println("Save command cancelled by user.");
+        }
+    }
+
+    private void loadFromFile() {
+        // Create a file chooser
+        JFileChooser fileChooser = new JFileChooser();
+
+        // Show the open dialog
+        int option = fileChooser.showOpenDialog(this);
+
+        if (option == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            try (FileInputStream fileIn = new FileInputStream(file); ObjectInputStream in = new ObjectInputStream(fileIn)) {
+                // Deserialize the new DrawingPanel
+                DrawingPanel newDrawPanel = (DrawingPanel) in.readObject();
+
+                // Remove the old DrawingPanel
+                Container con = getContentPane();
+                con.remove(drawPanel);
+
+                // Set the new DrawingPanel
+                drawPanel = newDrawPanel;
+
+                // Add the new DrawingPanel to the frame
+                con.add(drawPanel, BorderLayout.CENTER);
+
+                // Revalidate and repaint to update the frame
+                con.revalidate();
+                con.repaint();
+                System.out.println("File loaded: " + file.getAbsolutePath());
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error loading file: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            System.out.println("Load command cancelled by user.");
         }
     }
 }
