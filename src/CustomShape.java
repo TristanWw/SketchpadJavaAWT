@@ -1,7 +1,9 @@
 import java.awt.*;
 import java.awt.geom.*;
+import java.io.Serializable;
 
-class CustomShape {
+class CustomShape implements Serializable {
+    private static final long SerialVerionUID = 1L;
     private Shape shape;
     private Color color;
 
