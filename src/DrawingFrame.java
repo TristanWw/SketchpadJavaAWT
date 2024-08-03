@@ -106,6 +106,15 @@ class DrawingFrame extends JFrame implements ActionListener {
         JButton pasteButton = new JButton("Paste");
         pasteButton.addActionListener(e -> drawPanel.setMode(DrawingMode.PASTE));
         toolbar.add(pasteButton);
+
+        // Add OPEN_POLYGON and CLOSED_POLYGON buttons
+        JButton openPolygonButton = new JButton("Open Polygon");
+        openPolygonButton.addActionListener(e -> drawPanel.setMode(DrawingMode.OPEN_POLYGON));
+        toolbar.add(openPolygonButton);
+
+        JButton closedPolygonButton = new JButton("Closed Polygon");
+        closedPolygonButton.addActionListener(e -> drawPanel.setMode(DrawingMode.CLOSED_POLYGON));
+        toolbar.add(closedPolygonButton);
         
         JButton undoButton = new JButton("Undo");
         undoButton.addActionListener(e -> {

@@ -159,11 +159,32 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
         if (mode == DrawingMode.SELECT && selectedShape != null) {
             selectedShape = null;
             repaint();
-        } //else if (mode != DrawingMode.SELECT && currentShape != null) {
-            //shapes.add(currentShape);
-            //currentShape = null;
-            //repaint();
-        //}
+
+        } else if (mode != DrawingMode.SELECT && currentShape != null) {
+            shapes.add(currentShape);
+            currentShape = null;
+            repaint();
+        }
+
+//        else if (mode == DrawingMode.PASTE && clipboardShape != null) {
+//            Point endPoint = e.getPoint();
+//            CustomShape newShape = cloneShape(clipboardShape);
+//            if (newShape != null) {
+//                // Calculate the new position for the shape based on the endPoint
+//                int dx = (int) endPoint.getX() - (int) startPoint.getX();
+//                int dy = (int) endPoint.getY() - (int) startPoint.getY();
+//
+//                // Move the shape by dx and dy
+//                moveShape(newShape, dx, dy);
+//
+//                shapes.add(newShape);
+//                clipboardShape = null; // Clear clipboard after pasting
+//                repaint();
+//            }
+//        }
+
+        } 
+        
     }
 
     @Override
@@ -205,7 +226,12 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
             Point endPoint = e.getPoint();
             CustomShape newShape = cloneShape(clipboardShape);
             if (newShape != null) {
-                moveShape(newShape, endPoint.x - startPoint.x, endPoint.y - startPoint.y);
+
+
+                // Move the new shape to the location of the mouse click
+                moveShape(newShape, endPoint.x - clipboardShape.getShape().getBounds().x, endPoint.y - clipboardShape.getShape().getBounds().y);
+                shapes.add(newShape);
+
                 shapes.add(newShape);
                 if (isCutOperation) {
                     clipboardShape = null;
@@ -214,6 +240,11 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
                 repaint();
             }
         }
+
+
+
+
+
     }
 
     @Override

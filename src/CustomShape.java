@@ -62,5 +62,6 @@ class CustomShape {
             transform.translate(dx, dy);
             shape = path.createTransformedShape(transform);
         }
+        System.out.println("New shape: " + shape.getBounds());
     }
 }
