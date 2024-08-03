@@ -108,12 +108,22 @@ class DrawingFrame extends JFrame implements ActionListener {
         toolbar.add(pasteButton);
         
         JButton undoButton = new JButton("Undo");
-        /*undoButton.addActionListener(e -> {
-            drawPanel
-            if(mode == DrawingMode.SELECT) {
-                
+        undoButton.addActionListener(e -> {
+            if (drawPanel.historyIndex>-1){
+                DrawingMode temp = drawPanel.modeHistory.get(drawPanel.historyIndex);
+                if(temp == DrawingMode.SELECT) {
+                }else if(temp == DrawingMode.COPY){
+                }else if(temp == DrawingMode.CUT){
+                }else if(temp == DrawingMode.PASTE){
+                }else{
+                    //System.out.println(drawPanel.modeHistory.get(drawPanel.modeHistory.size()-1));
+                    drawPanel.shapes.remove(drawPanel.shapes.size()-1);
+                    drawPanel.historyIndex--;
+                    drawPanel.repaint();
+                }
             }
-        });*/
+            
+        });
         toolbar.add(undoButton);
         
         JButton redoButton = new JButton("Redo");

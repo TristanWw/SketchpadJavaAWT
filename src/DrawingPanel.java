@@ -11,21 +11,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 enum DrawingMode {
-    CIRCLE, LINE, RECTANGLE, ELLIPSE, SELECT, SQUARE, OPEN_POLYGON, CLOSED_POLYGON, COPY, CUT, PASTE
-}
+    CIRCLE, LINE, RECTANGLE, ELLIPSE, SELECT, SQUARE, OPEN_POLYGON, CLOSED_POLYGON, COPY, CUT, PASTE}
 
 class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener {
     private int shapeSize;
     private Color shapeColor;
-    private DrawingMode mode = DrawingMode.CIRCLE;
+    public  DrawingMode mode = DrawingMode.CIRCLE;
     private CustomShape currentShape = null;
-    private List<CustomShape> shapes = new ArrayList<>();
+    public  List<CustomShape> shapes = new ArrayList<>();
     private Point startPoint;
     private CustomShape selectedShape = null;
     private List<Point> polygonPoints = new ArrayList<>();
     private boolean drawingPolygon = false;
     private boolean isDrawingCircle = false;
     private Point circleCenter;
+    public  List<CustomShape> shapesChanged = new ArrayList<>();
+    public  ArrayList<DrawingMode> modeHistory = new ArrayList<>();
+    public  int historyIndex=-1;
 
     private CustomShape clipboardShape = null;
     private boolean isCutOperation = false;
@@ -89,7 +91,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
         repaint();
     }
     
-    void switchCurrentShape(Point startPoint,Point endPoint){
+    void switchCurrentShape(Point startPoint,Point endPoint,String status){
         switch (mode) {
             case LINE:
                 currentShape = new CustomShape(new Line2D.Double(startPoint, endPoint), shapeColor);
@@ -133,6 +135,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
         }
         shapes.add(currentShape);
         currentShape = null;
+        if (status=="Pressed"){modeHistory.add(mode);historyIndex++;}
         repaint();
     }
     
@@ -147,7 +150,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
         } else if (mode != DrawingMode.SELECT && mode != DrawingMode.OPEN_POLYGON && mode != DrawingMode.CLOSED_POLYGON) {
             Point endPoint = e.getPoint();
             shapes.remove(shapes.size()-1);
-            switchCurrentShape(startPoint,endPoint);
+            switchCurrentShape(startPoint,endPoint,"Dragged");
         }
     }
 
@@ -227,7 +230,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
            // startPoint = e.getPoint();
         //}
         else if (mode!=DrawingMode.COPY && mode!=DrawingMode.CUT && mode!=DrawingMode.PASTE){ // might need changes
-            switchCurrentShape(startPoint,startPoint);
+            switchCurrentShape(startPoint,startPoint,"Pressed");
         }
     }
 
