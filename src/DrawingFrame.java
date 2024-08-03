@@ -90,6 +90,15 @@ class DrawingFrame extends JFrame implements ActionListener {
         JButton ellipseButton = new JButton("Ellipse");
         ellipseButton.addActionListener(e -> drawPanel.setMode(DrawingMode.ELLIPSE));
         toolbar.add(ellipseButton);
+        
+        // Add OPEN_POLYGON and CLOSED_POLYGON buttons
+        JButton openPolygonButton = new JButton("Open Polygon");
+        openPolygonButton.addActionListener(e -> drawPanel.setMode(DrawingMode.OPEN_POLYGON));
+        toolbar.add(openPolygonButton);
+
+        JButton closedPolygonButton = new JButton("Closed Polygon");
+        closedPolygonButton.addActionListener(e -> drawPanel.setMode(DrawingMode.CLOSED_POLYGON));
+        toolbar.add(closedPolygonButton);
 
         JButton selectButton = new JButton("Select");
         selectButton.addActionListener(e -> drawPanel.setMode(DrawingMode.SELECT));
@@ -107,14 +116,7 @@ class DrawingFrame extends JFrame implements ActionListener {
         pasteButton.addActionListener(e -> drawPanel.setMode(DrawingMode.PASTE));
         toolbar.add(pasteButton);
 
-        // Add OPEN_POLYGON and CLOSED_POLYGON buttons
-        JButton openPolygonButton = new JButton("Open Polygon");
-        openPolygonButton.addActionListener(e -> drawPanel.setMode(DrawingMode.OPEN_POLYGON));
-        toolbar.add(openPolygonButton);
-
-        JButton closedPolygonButton = new JButton("Closed Polygon");
-        closedPolygonButton.addActionListener(e -> drawPanel.setMode(DrawingMode.CLOSED_POLYGON));
-        toolbar.add(closedPolygonButton);
+        
         
         JButton undoButton = new JButton("Undo");
         undoButton.addActionListener(e -> {

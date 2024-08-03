@@ -182,10 +182,8 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
 //                repaint();
 //            }
 //        }
-
-        } 
-        
-    }
+    } 
+    
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -240,11 +238,6 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener 
                 repaint();
             }
         }
-
-
-
-
-
     }
 
     @Override
