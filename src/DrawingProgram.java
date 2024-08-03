@@ -1,5 +1,3 @@
-package t12.t6;
-
 import javax.swing.*;
 
 public class DrawingProgram {
