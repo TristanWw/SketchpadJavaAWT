@@ -50,7 +50,7 @@ class CustomShape implements Serializable {
         return null;
     }
     
-    public void move(int dx, int dy) {
+    public void move(double dx, double dy) {
         if (shape instanceof Ellipse2D) {
             Ellipse2D ellipse = (Ellipse2D) shape;
             shape = new Ellipse2D.Double(

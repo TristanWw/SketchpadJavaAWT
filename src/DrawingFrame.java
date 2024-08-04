@@ -131,13 +131,25 @@ class DrawingFrame extends JFrame implements ActionListener {
         
         JButton undoButton = new JButton("Undo");
         undoButton.addActionListener(e -> {
-            DrawingMode temp = drawPanel.history.historyLine.get(drawPanel.history.index).modeChanged;
+            DrawingPanel.History.HistoryInstance temp = drawPanel.history.historyLine.get(drawPanel.history.index);
             
-            if (drawPanel.history.index>-1){
-                if(temp == DrawingMode.COPY){
-                }else if(temp == DrawingMode.CUT){
-                }else if(temp == DrawingMode.PASTE){
-                }else if(temp != DrawingMode.SELECT) {
+            if (drawPanel.history.index>-1){ // at least one historyInstance
+                if(temp.modeChanged == DrawingMode.COPY){
+                }else if(temp.modeChanged == DrawingMode.CUT){
+                }else if(temp.modeChanged == DrawingMode.PASTE){
+                }else if(temp.modeChanged == DrawingMode.SELECT){
+                    if (drawPanel.history.index>0){ // at least two historyInstance
+                        DrawingPanel.History.HistoryInstance temp1 =  drawPanel.history.historyLine.get(drawPanel.history.index-1);
+                        if(temp1.modeChanged == DrawingMode.SELECT){ // preceding one is also SELECT, two SELECT in a row
+                        
+                            temp1.shapeChanged.move(temp1.coordinate[0]-temp.coordinate[0],temp1.coordinate[1]-temp.coordinate[1]);
+                        
+                            drawPanel.history.index--;
+                            drawPanel.history.index--;
+                            drawPanel.repaint();
+                        }
+                    }
+                }else{ // DRAW
                     //System.out.println(drawPanel.modeHistory.get(drawPanel.modeHistory.size()-1));
                     drawPanel.shapes.remove(drawPanel.shapes.size()-1);
                     drawPanel.history.index--;
@@ -145,18 +157,7 @@ class DrawingFrame extends JFrame implements ActionListener {
                 }
             }
             
-            /*if(temp == DrawingMode.SELECT){
-                if (drawPanel.history.index>0){
-                    DrawingPanel.History.HistoryInstance temp1 =  drawPanel.history.historyLine.get(drawPanel.history.index-1);
-                    if(temp1.modeChanged == DrawingMode.SELECT){
-                        drawPanel.shapes.remove(drawPanel.shapes.size()-1);
-                        drawPanel.shapes.add(temp1.shapeChanged);
-                        drawPanel.history.index--;
-                        drawPanel.history.index--;
-                        drawPanel.repaint();
-                    }
-                }
-            }*/
+            
         
             
         });
@@ -164,12 +165,22 @@ class DrawingFrame extends JFrame implements ActionListener {
         
         JButton redoButton = new JButton("Redo");
         redoButton.addActionListener(e -> {
-            if (drawPanel.history.index<drawPanel.history.historyLine.size()-1){
-                DrawingMode temp = drawPanel.history.historyLine.get(drawPanel.history.index+1).modeChanged;
-                if(temp == DrawingMode.SELECT) {
-                }else if(temp == DrawingMode.COPY){
-                }else if(temp == DrawingMode.CUT){
-                }else if(temp == DrawingMode.PASTE){
+            if (drawPanel.history.index<drawPanel.history.historyLine.size()-1){ // at least one more following
+                DrawingPanel.History.HistoryInstance temp = drawPanel.history.historyLine.get(drawPanel.history.index+1);
+                
+                if(temp.modeChanged == DrawingMode.COPY){
+                }else if(temp.modeChanged == DrawingMode.CUT){
+                }else if(temp.modeChanged == DrawingMode.PASTE){
+                }else if(temp.modeChanged == DrawingMode.SELECT){ // next one is SELECT. the first time encounter is not SELECT
+                    if (drawPanel.history.index>0){ // at least two more following
+                        DrawingPanel.History.HistoryInstance temp1 =  drawPanel.history.historyLine.get(drawPanel.history.index+2);
+                        if(temp1.modeChanged==DrawingMode.SELECT){ // this next following is also SELECT
+                            temp1.shapeChanged.move(temp1.coordinate[0]-temp.coordinate[0],temp1.coordinate[1]-temp.coordinate[1]);
+                            drawPanel.history.index++;
+                            drawPanel.history.index++;
+                            drawPanel.repaint();
+                        }
+                    }
                 }else{
                     //System.out.println(drawPanel.modeHistory.get(drawPanel.modeHistory.size()-1));
                     drawPanel.shapes.add(drawPanel.history.historyLine.get(drawPanel.history.index+1).shapeChanged);
@@ -177,7 +188,6 @@ class DrawingFrame extends JFrame implements ActionListener {
                     drawPanel.repaint();
                 }
             }
-            
         });
         
         toolbar.add(redoButton);

@@ -49,8 +49,8 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
             HistoryInstance(DrawingMode m, CustomShape s){
                 modeChanged=m; index++;
                 
-                if(m!=DrawingMode.SELECT&&m!=DrawingMode.COPY&&m!=DrawingMode.CUT&&m!=DrawingMode.PASTE){shapeChanged=s;}
-                else if(m==DrawingMode.SELECT){
+                if(m!=DrawingMode.COPY&&m!=DrawingMode.CUT&&m!=DrawingMode.PASTE){shapeChanged=s;} // DRAW and SELECT
+                if(m==DrawingMode.SELECT){
                     coordinate=s.getCoordinate();
                 }
             }
@@ -171,7 +171,9 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
         System.out.println("");
         history.historyLine.forEach(l -> {
             
-            System.out.print(l.modeChanged);
+            
+            System.out.print(l.shapeChanged.getCoordinate()[0]);
+            
         
         });
     
@@ -204,7 +206,9 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
         System.out.println("");
         history.historyLine.forEach(l -> {
             
-            System.out.print(l.modeChanged);
+            System.out.print(l.shapeChanged.getCoordinate()[0]);
+            
+            
         
         });
     }
