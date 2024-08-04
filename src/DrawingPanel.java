@@ -47,8 +47,11 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
             CustomShape shapeChanged; DrawingMode modeChanged;
             double[] coordinate;
             HistoryInstance(DrawingMode m, CustomShape s){
+                if(index<historyLine.size()-1){historyLine.subList(index+1,historyLine.size()).clear();}
                 modeChanged=m; index++;
-                
+                System.out.println("");
+                System.out.print(index);
+                System.out.print(historyLine.size());
                 if(m!=DrawingMode.COPY&&m!=DrawingMode.CUT&&m!=DrawingMode.PASTE){shapeChanged=s;} // DRAW and SELECT
                 if(m==DrawingMode.SELECT){
                     coordinate=s.getCoordinate();
@@ -173,10 +176,11 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
     
     @Override
     public void mouseDragged(MouseEvent e) {
-        /*System.out.println("");
-        history.historyLine.forEach(l -> {
-            System.out.print(l.shapeChanged.getCoordinate()[0]);
-        });*/  // development testing
+       // System.out.println("");
+        //System.out.println(history.index);
+        //history.historyLine.forEach(l -> {
+          //  System.out.print(l.shapeChanged.getCoordinate()[0]);
+        //});*/  // development testing
     
         if (mode == DrawingMode.SELECT && selectedShapes.size() != 0) {
             int dx = e.getX() - startPoint.x;
@@ -205,10 +209,11 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
             repaint();
         }else if(mode!=DrawingMode.SELECT&&mode!=DrawingMode.COPY&&mode!=DrawingMode.CUT&&mode!=DrawingMode.PASTE&&mode!=DrawingMode.OPEN_POLYGON &&mode!=DrawingMode.CLOSED_POLYGON){drawCurrentShape(startPoint,e.getPoint(),"Released");}
         
-        /*System.out.println("");
-        history.historyLine.forEach(l -> {
-            System.out.print(l.shapeChanged.getCoordinate()[0]);
-        });*/ // development testing
+        //System.out.println("");
+        //System.out.println(history.index);
+        //history.historyLine.forEach(l -> {
+            //System.out.print(l.shapeChanged.getCoordinate()[0]);
+        //});*/ // development testing
     }
 
 //        else if (mode == DrawingMode.PASTE && clipboardShape != null) {
