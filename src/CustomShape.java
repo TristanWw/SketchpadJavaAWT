@@ -25,7 +25,15 @@ class CustomShape implements Serializable {
         g.draw(shape);
         g.fill(shape);
     }
-
+    
+    public void gradient(Graphics2D g) {
+        Rectangle bounds = shape.getBounds();
+        GradientPaint gradientPaint = new GradientPaint(bounds.x,bounds.y,color.CYAN,bounds.x+bounds.width,bounds.y+bounds.height,color.MAGENTA);
+        g.setPaint(gradientPaint);
+        g.setStroke(new BasicStroke(5));
+        g.draw(shape);
+    }
+    
     public boolean contains(Point p) {
         if (shape instanceof Line2D) {
             Line2D line = (Line2D) shape;
