@@ -22,7 +22,10 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
     private CustomShape currentShape = null;
     public  List<CustomShape> shapes = new ArrayList<>();
     private Point startPoint;
-    private CustomShape selectedShape = null;
+    
+    private List<CustomShape> selectedShapes = new ArrayList<CustomShape>();
+    //private CustomShape selectedShape = null;
+    
     private List<Point> polygonPoints = new ArrayList<>();
     private boolean drawingPolygon = false;
     private boolean isDrawingCircle = false;
@@ -42,9 +45,15 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
         class HistoryInstance implements Serializable {
             private static final long SerialVerionUID = 1L;
             CustomShape shapeChanged; DrawingMode modeChanged;
+            double[] coordinate;
             HistoryInstance(DrawingMode m, CustomShape s){
                 modeChanged=m; index++;
-                if(m!=DrawingMode.SELECT&&m!=DrawingMode.COPY&&m!=DrawingMode.CUT&&m!=DrawingMode.PASTE){shapeChanged=s;}}
+                
+                if(m!=DrawingMode.SELECT&&m!=DrawingMode.COPY&&m!=DrawingMode.CUT&&m!=DrawingMode.PASTE){shapeChanged=s;}
+                else if(m==DrawingMode.SELECT){
+                    coordinate=s.getCoordinate();
+                }
+            }
         }
         public  ArrayList<HistoryInstance> historyLine = new ArrayList<HistoryInstance>();
     }
@@ -150,19 +159,26 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
             default:
                 break;
         }
-        if(status!="Released"){shapes.add(currentShape);}
         //if (status=="Pressed"){history.historyLine.add(history.new HistoryInstance(mode,currentShape) );}
-        if (status=="Released"){history.historyLine.add(history.new HistoryInstance(mode,currentShape));}
+        if(status!="Released"){shapes.add(currentShape);}
+        else{history.historyLine.add(history.new HistoryInstance(mode,currentShape));} // status == "Released"
         currentShape = null;
         repaint();
     }
     
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (mode == DrawingMode.SELECT && selectedShape != null) {
+        System.out.println("");
+        history.historyLine.forEach(l -> {
+            
+            System.out.print(l.modeChanged);
+        
+        });
+    
+        if (mode == DrawingMode.SELECT && selectedShapes.size() != 0) {
             int dx = e.getX() - startPoint.x;
             int dy = e.getY() - startPoint.y;
-            selectedShape.move(dx, dy);
+            selectedShapes.get(selectedShapes.size()-1).move(dx, dy);
             startPoint = e.getPoint();
             repaint();
         } else if (mode != DrawingMode.SELECT && mode != DrawingMode.OPEN_POLYGON && mode != DrawingMode.CLOSED_POLYGON) {
@@ -174,8 +190,10 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (mode == DrawingMode.SELECT && selectedShape != null) {
-            selectedShape = null;
+        if (mode == DrawingMode.SELECT && selectedShapes.size() != 0) { //SELECT MODE, NOT NULL
+            history.historyLine.add(history.new HistoryInstance(mode,selectedShapes.get(selectedShapes.size()-1))); //add history
+            //history.historyLine.add(history.new HistoryInstance(mode,new CustomShape(selectedShapes.get(selectedShapes.size()-1).getShape(),selectedShapes.get(selectedShapes.size()-1).getColor())));
+            selectedShapes.clear();
             repaint();
 
         } else if (mode != DrawingMode.SELECT && currentShape != null) {
@@ -183,6 +201,12 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
             currentShape = null;
             repaint();
         }else if(mode!=DrawingMode.SELECT&&mode!=DrawingMode.COPY&&mode!=DrawingMode.CUT&&mode!=DrawingMode.PASTE&&mode!=DrawingMode.OPEN_POLYGON &&mode!=DrawingMode.CLOSED_POLYGON){drawCurrentShape(startPoint,e.getPoint(),"Released");}
+        System.out.println("");
+        history.historyLine.forEach(l -> {
+            
+            System.out.print(l.modeChanged);
+        
+        });
     }
 
 //        else if (mode == DrawingMode.PASTE && clipboardShape != null) {
@@ -265,7 +289,10 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
         if (mode == DrawingMode.SELECT) {
             for (CustomShape shape : shapes) {
                 if (shape.contains(startPoint)) {
-                    selectedShape = shape;
+                    selectedShapes.add(shape);
+                    // new instance, point to different memory
+                    //history.historyLine.add(history.new HistoryInstance(mode,new CustomShape(shape.getShape(),shape.getColor())));
+                    history.historyLine.add(history.new HistoryInstance(mode,shape));
                     break;
                 }
             }

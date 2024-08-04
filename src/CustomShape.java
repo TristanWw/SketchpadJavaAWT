@@ -33,6 +33,23 @@ class CustomShape implements Serializable {
         }
         return shape.contains(p);
     }
+    
+    public double[] getCoordinate(){
+        if (shape instanceof Ellipse2D) {
+            Ellipse2D ellipse = (Ellipse2D) shape;
+            return new double[]{ellipse.getX(),ellipse.getY()};
+            
+        } else if (shape instanceof Rectangle2D) {
+            Rectangle2D rect = (Rectangle2D) shape;
+            return new double[]{rect.getX(),rect.getY()};
+            
+        } else if (shape instanceof Line2D) {
+            Line2D line = (Line2D) shape;
+            return new double[]{line.getX1(),line.getY1(),line.getX2(),line.getY2()};
+        }
+        return null;
+    }
+    
     public void move(int dx, int dy) {
         if (shape instanceof Ellipse2D) {
             Ellipse2D ellipse = (Ellipse2D) shape;
@@ -64,6 +81,6 @@ class CustomShape implements Serializable {
             transform.translate(dx, dy);
             shape = path.createTransformedShape(transform);
         }
-        System.out.println("New shape: " + shape.getBounds());
+        //System.out.println("New shape: " + shape.getBounds());
     }
 }
