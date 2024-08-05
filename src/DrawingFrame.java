@@ -116,11 +116,29 @@ class DrawingFrame extends JFrame implements ActionListener {
         toolbar.add(selectButton);
 
         JButton copyButton = new JButton("Copy");
-        copyButton.addActionListener(e -> drawPanel.setMode(DrawingMode.COPY));
+        copyButton.addActionListener(e -> {
+            drawPanel.setMode(DrawingMode.COPY);
+           
+            for (CustomShape shape : drawPanel.selectedShapes) {
+                drawPanel.clipboardShape.add(drawPanel.cloneShape(shape));
+            }
+        
+        });
         toolbar.add(copyButton);
 
         JButton cutButton = new JButton("Cut");
-        cutButton.addActionListener(e -> drawPanel.setMode(DrawingMode.CUT));
+        cutButton.addActionListener(e -> {
+            drawPanel.setMode(DrawingMode.CUT);
+         
+            for (CustomShape shape : drawPanel.selectedShapes) {
+                
+                drawPanel.shapes.remove(shape);
+                drawPanel.clipboardShape.add(drawPanel.cloneShape(shape));
+                drawPanel.isCutOperation = true;
+            }
+            drawPanel.selectedShapes.clear();
+            drawPanel.repaint();
+        });
         toolbar.add(cutButton);
 
         JButton pasteButton = new JButton("Paste");
@@ -144,13 +162,15 @@ class DrawingFrame extends JFrame implements ActionListener {
                             DrawingPanel.History.HistorySelectMove tempA=(DrawingPanel.History.HistorySelectMove) temp;
                             DrawingPanel.History.HistorySelectMove temp1A=(DrawingPanel.History.HistorySelectMove) temp1;
                             temp1A.shapeChanged.move(temp1A.coordinate[0]-tempA.coordinate[0],temp1A.coordinate[1]-tempA.coordinate[1]);
-                        
+                            
+                            System.out.println(temp1A.coordinate[0]);
+                            
                             drawPanel.history.index--;
                             drawPanel.history.index--;
                             drawPanel.repaint();
                         }
                     }
-                }else{ // DRAW
+                }else if(temp instanceof DrawingPanel.History.HistoryDraw){ // DRAW
                     //System.out.println(drawPanel.modeHistory.get(drawPanel.modeHistory.size()-1));
                     drawPanel.shapes.remove(drawPanel.shapes.size()-1);
                     drawPanel.history.index--;
@@ -160,7 +180,7 @@ class DrawingFrame extends JFrame implements ActionListener {
             
             
         
-        System.out.println(drawPanel.history.index);
+        //System.out.println(drawPanel.history.index);
         });
         toolbar.add(undoButton);
         
@@ -180,12 +200,15 @@ class DrawingFrame extends JFrame implements ActionListener {
                             DrawingPanel.History.HistorySelectMove tempA=(DrawingPanel.History.HistorySelectMove) temp;
                             DrawingPanel.History.HistorySelectMove temp1A=(DrawingPanel.History.HistorySelectMove) temp1;
                             temp1A.shapeChanged.move(temp1A.coordinate[0]-tempA.coordinate[0],temp1A.coordinate[1]-tempA.coordinate[1]);
+                            
+                            System.out.println(temp1A.coordinate[0]);
+                            
                             drawPanel.history.index++;
                             drawPanel.history.index++;
                             drawPanel.repaint();
                         }
                     }
-                }else{
+                }else if(temp instanceof DrawingPanel.History.HistoryDraw){
                     //System.out.println(drawPanel.modeHistory.get(drawPanel.modeHistory.size()-1));
                     DrawingPanel.History.HistoryDraw tempA=(DrawingPanel.History.HistoryDraw) temp;
                     drawPanel.shapes.add(tempA.shapeChanged);
@@ -193,7 +216,7 @@ class DrawingFrame extends JFrame implements ActionListener {
                     drawPanel.repaint();
                 }
             }
-        System.out.println(drawPanel.history.index);
+        
         });
         
         toolbar.add(redoButton);
