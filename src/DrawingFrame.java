@@ -134,15 +134,16 @@ class DrawingFrame extends JFrame implements ActionListener {
 
             if (drawPanel.history.index>-1){ // at least one historyInstance
                 DrawingPanel.History.HistoryInstance temp = drawPanel.history.historyLine.get(drawPanel.history.index);
-                if(temp.modeChanged == DrawingMode.COPY){
-                }else if(temp.modeChanged == DrawingMode.CUT){
-                }else if(temp.modeChanged == DrawingMode.PASTE){
-                }else if(temp.modeChanged == DrawingMode.SELECT){
+                if(temp instanceof DrawingPanel.History.HistoryCopy){
+                }else if(temp instanceof DrawingPanel.History.HistoryCut){
+                }else if(temp instanceof DrawingPanel.History.HistoryPaste){
+                }else if(temp instanceof DrawingPanel.History.HistorySelectMove){
                     if (drawPanel.history.index>0){ // at least two historyInstance
                         DrawingPanel.History.HistoryInstance temp1 =  drawPanel.history.historyLine.get(drawPanel.history.index-1);
-                        if(temp1.modeChanged == DrawingMode.SELECT){ // preceding one is also SELECT, two SELECT in a row
-                        
-                            temp1.shapeChanged.move(temp1.coordinate[0]-temp.coordinate[0],temp1.coordinate[1]-temp.coordinate[1]);
+                        if(temp1 instanceof DrawingPanel.History.HistorySelectMove){ // preceding one is also SELECT, two SELECT in a row
+                            DrawingPanel.History.HistorySelectMove tempA=(DrawingPanel.History.HistorySelectMove) temp;
+                            DrawingPanel.History.HistorySelectMove temp1A=(DrawingPanel.History.HistorySelectMove) temp1;
+                            temp1A.shapeChanged.move(temp1A.coordinate[0]-tempA.coordinate[0],temp1A.coordinate[1]-tempA.coordinate[1]);
                         
                             drawPanel.history.index--;
                             drawPanel.history.index--;
@@ -169,14 +170,16 @@ class DrawingFrame extends JFrame implements ActionListener {
             if (drawPanel.history.index<drawPanel.history.historyLine.size()-1){ // at least one more following
                 DrawingPanel.History.HistoryInstance temp = drawPanel.history.historyLine.get(drawPanel.history.index+1);
                 
-                if(temp.modeChanged == DrawingMode.COPY){
-                }else if(temp.modeChanged == DrawingMode.CUT){
-                }else if(temp.modeChanged == DrawingMode.PASTE){
-                }else if(temp.modeChanged == DrawingMode.SELECT){ // next one is SELECT. the first time encounter is not SELECT
+                if(temp instanceof DrawingPanel.History.HistoryCopy){
+                }else if(temp instanceof DrawingPanel.History.HistoryCut){
+                }else if(temp instanceof DrawingPanel.History.HistoryPaste){
+                }else if(temp instanceof DrawingPanel.History.HistorySelectMove){ // next one is SELECT. the first time encounter is not SELECT
                     if (drawPanel.history.index>0){ // at least two more following
                         DrawingPanel.History.HistoryInstance temp1 =  drawPanel.history.historyLine.get(drawPanel.history.index+2);
-                        if(temp1.modeChanged==DrawingMode.SELECT){ // this next following is also SELECT
-                            temp1.shapeChanged.move(temp1.coordinate[0]-temp.coordinate[0],temp1.coordinate[1]-temp.coordinate[1]);
+                        if(temp1 instanceof DrawingPanel.History.HistorySelectMove){ // this next following is also SELECT
+                            DrawingPanel.History.HistorySelectMove tempA=(DrawingPanel.History.HistorySelectMove) temp;
+                            DrawingPanel.History.HistorySelectMove temp1A=(DrawingPanel.History.HistorySelectMove) temp1;
+                            temp1A.shapeChanged.move(temp1A.coordinate[0]-tempA.coordinate[0],temp1A.coordinate[1]-tempA.coordinate[1]);
                             drawPanel.history.index++;
                             drawPanel.history.index++;
                             drawPanel.repaint();
@@ -184,7 +187,8 @@ class DrawingFrame extends JFrame implements ActionListener {
                     }
                 }else{
                     //System.out.println(drawPanel.modeHistory.get(drawPanel.modeHistory.size()-1));
-                    drawPanel.shapes.add(drawPanel.history.historyLine.get(drawPanel.history.index+1).shapeChanged);
+                    DrawingPanel.History.HistoryDraw tempA=(DrawingPanel.History.HistoryDraw) temp;
+                    drawPanel.shapes.add(tempA.shapeChanged);
                     drawPanel.history.index++;
                     drawPanel.repaint();
                 }
