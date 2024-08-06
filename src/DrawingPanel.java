@@ -61,13 +61,6 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
                 super();
                 shapeChanged=s;coordinate=s.getCoordinate();}}
         
-        class HistoryCopy extends HistoryInstance implements Serializable{
-            private static final long SerialVerionUID = 1L;
-            CustomShape shapeChanged;
-            HistoryCopy(CustomShape s){
-                super();
-                shapeChanged=s;}}
-        
         class HistoryCut extends HistoryInstance implements Serializable{
             private static final long SerialVerionUID = 1L;
             CustomShape shapeChanged;
@@ -191,8 +184,8 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
                 break;
         }
         //if (status=="Pressed"){history.historyLine.add(history.new HistoryInstance(mode,currentShape) );}
-        if(status!="Released"){shapes.add(currentShape);}
-        else{history.historyLine.add(history.new HistoryDraw(currentShape));} // status == "Released"
+        shapes.add(currentShape);
+        if(status=="Released"){history.historyLine.add(history.new HistoryDraw(currentShape));} // status == "Released"
         currentShape = null;
         repaint();
     }
@@ -226,14 +219,14 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
             history.historyLine.add(history.new HistorySelectMove(selectedShapes.get(selectedShapes.size()-1))); //add history, only one item in SELECT_MOVE
             
             selectedShapes.remove(selectedShapes.size()-1);
-            System.out.println(selectedShapes.size());
+            //System.out.println(selectedShapes.size());
             repaint();
 
         } /*else if (mode != DrawingMode.SELECT && currentShape != null) {
             shapes.add(currentShape);
             currentShape = null;
             repaint();
-        }*/else if(mode!=DrawingMode.SELECT&&mode!=DrawingMode.COPY&&mode!=DrawingMode.CUT&&mode!=DrawingMode.PASTE&&mode!=DrawingMode.OPEN_POLYGON &&mode!=DrawingMode.CLOSED_POLYGON){drawCurrentShape(startPoint,e.getPoint(),"Released");}
+        }*/else if(mode!=DrawingMode.SELECT&&mode!=DrawingMode.COPY&&mode!=DrawingMode.CUT&&mode!=DrawingMode.PASTE&&mode!=DrawingMode.OPEN_POLYGON &&mode!=DrawingMode.CLOSED_POLYGON){shapes.remove(shapes.size()-1);drawCurrentShape(startPoint,e.getPoint(),"Released");}
         
         //System.out.println("");
         //System.out.println(history.index);
@@ -290,7 +283,8 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
                 CustomShape newShape = cloneShape(temp);
                 // Move the new shape to the location of the mouse click
                 moveShape(newShape, endPoint.x - temp.getShape().getBounds().x, endPoint.y - temp.getShape().getBounds().y);
-                shapes.add(newShape);       
+                shapes.add(newShape);
+                history.historyLine.add(history.new HistoryPaste(newShape));      
             }
             if (isCutOperation) {
                 clipboardShape.clear();
@@ -301,7 +295,9 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
         } else if (mode == DrawingMode.SELECT){
             
             if(selectedShapes.size()<=1){
-                
+            
+                if(history.index>=1){history.index= history.index-2;}  // press->release->click, even with one click
+                if(history.historyLine.size()>=2){history.historyLine.remove(history.historyLine.size()-1);history.historyLine.remove(history.historyLine.size()-1);}
                 boolean found=false;
                 for (CustomShape shape : shapes) {
                     if (shape.contains(startPoint)) { // found the shape
@@ -315,8 +311,9 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
                         }else{  // clicked a different shape
                             selectedShapes.clear();
                             selectedShapes.add(shape);
+                            System.out.println(shape);
                         }    
-                        System.out.println(selectedShapes.size());
+                        //System.out.println(selectedShapes.size());
                         //history.historyLine.add(history.new HistorySelectMove(shape));
                         break;
                     }
@@ -342,7 +339,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
                         } else{// clicked a shape not in select
                             selectedShapes.clear();
                             selectedShapes.add(shape);
-                            System.out.println(selectedShapes.size());
+                            //System.out.println(selectedShapes.size());
                             repaint();
                             history.historyLine.add(history.new HistorySelectMove(shape));
                         } 

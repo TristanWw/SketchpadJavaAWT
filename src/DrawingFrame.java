@@ -129,15 +129,18 @@ class DrawingFrame extends JFrame implements ActionListener {
         JButton cutButton = new JButton("Cut");
         cutButton.addActionListener(e -> {
             drawPanel.setMode(DrawingMode.CUT);
-         
+            
             for (CustomShape shape : drawPanel.selectedShapes) {
                 
                 drawPanel.shapes.remove(shape);
                 drawPanel.clipboardShape.add(drawPanel.cloneShape(shape));
                 drawPanel.isCutOperation = true;
+                drawPanel.history.historyLine.add(drawPanel.history.new HistoryCut(shape));
+                System.out.println(shape);
             }
             drawPanel.selectedShapes.clear();
             drawPanel.repaint();
+            
         });
         toolbar.add(cutButton);
 
@@ -152,9 +155,17 @@ class DrawingFrame extends JFrame implements ActionListener {
 
             if (drawPanel.history.index>-1){ // at least one historyInstance
                 DrawingPanel.History.HistoryInstance temp = drawPanel.history.historyLine.get(drawPanel.history.index);
-                if(temp instanceof DrawingPanel.History.HistoryCopy){
-                }else if(temp instanceof DrawingPanel.History.HistoryCut){
+                if(temp instanceof DrawingPanel.History.HistoryCut){
+                    DrawingPanel.History.HistoryCut tempA=(DrawingPanel.History.HistoryCut) temp;
+                    drawPanel.shapes.add(tempA.shapeChanged); 
+                    drawPanel.history.index--;
+                    drawPanel.repaint();
                 }else if(temp instanceof DrawingPanel.History.HistoryPaste){
+                    DrawingPanel.History.HistoryPaste tempA=(DrawingPanel.History.HistoryPaste) temp;
+                    drawPanel.shapes.remove(tempA.shapeChanged); // latest draw remove
+
+                    drawPanel.history.index--;
+                    drawPanel.repaint();
                 }else if(temp instanceof DrawingPanel.History.HistorySelectMove){
                     if (drawPanel.history.index>0){ // at least two historyInstance
                         DrawingPanel.History.HistoryInstance temp1 =  drawPanel.history.historyLine.get(drawPanel.history.index-1);
@@ -163,7 +174,7 @@ class DrawingFrame extends JFrame implements ActionListener {
                             DrawingPanel.History.HistorySelectMove temp1A=(DrawingPanel.History.HistorySelectMove) temp1;
                             temp1A.shapeChanged.move(temp1A.coordinate[0]-tempA.coordinate[0],temp1A.coordinate[1]-tempA.coordinate[1]);
                             
-                            System.out.println(temp1A.coordinate[0]);
+                            //System.out.println(temp1A.coordinate[0]);
                             
                             drawPanel.history.index--;
                             drawPanel.history.index--;
@@ -172,15 +183,21 @@ class DrawingFrame extends JFrame implements ActionListener {
                     }
                 }else if(temp instanceof DrawingPanel.History.HistoryDraw){ // DRAW
                     //System.out.println(drawPanel.modeHistory.get(drawPanel.modeHistory.size()-1));
-                    drawPanel.shapes.remove(drawPanel.shapes.size()-1);
+                    DrawingPanel.History.HistoryDraw tempA=(DrawingPanel.History.HistoryDraw) temp;
+                    drawPanel.shapes.remove(tempA.shapeChanged); // latest draw remove
                     drawPanel.history.index--;
                     drawPanel.repaint();
                 }
             }
-            
-            
-        
-        //System.out.println(drawPanel.history.index);
+            /*for(DrawingPanel.History.HistoryInstance a: drawPanel.history.historyLine){
+                if(a instanceof DrawingPanel.History.HistoryDraw){
+                    DrawingPanel.History.HistoryDraw b=(DrawingPanel.History.HistoryDraw) a;
+                    System.out.println(b.shapeChanged);}
+                else if(a instanceof DrawingPanel.History.HistoryCut){
+                    DrawingPanel.History.HistoryCut b=(DrawingPanel.History.HistoryCut) a;
+                    System.out.println(b.shapeChanged);}
+            }
+            System.out.println(drawPanel.history.index);*/ //testing
         });
         toolbar.add(undoButton);
         
@@ -190,9 +207,16 @@ class DrawingFrame extends JFrame implements ActionListener {
             if (drawPanel.history.index<drawPanel.history.historyLine.size()-1){ // at least one more following
                 DrawingPanel.History.HistoryInstance temp = drawPanel.history.historyLine.get(drawPanel.history.index+1);
                 
-                if(temp instanceof DrawingPanel.History.HistoryCopy){
-                }else if(temp instanceof DrawingPanel.History.HistoryCut){
+                if(temp instanceof DrawingPanel.History.HistoryCut){
+                    DrawingPanel.History.HistoryCut tempA=(DrawingPanel.History.HistoryCut) temp;
+                    drawPanel.shapes.remove(tempA.shapeChanged); // latest draw remove
+                    drawPanel.history.index++;
+                    drawPanel.repaint();
                 }else if(temp instanceof DrawingPanel.History.HistoryPaste){
+                    DrawingPanel.History.HistoryPaste tempA=(DrawingPanel.History.HistoryPaste) temp;
+                    drawPanel.shapes.add(tempA.shapeChanged); 
+                    drawPanel.history.index++;
+                    drawPanel.repaint();
                 }else if(temp instanceof DrawingPanel.History.HistorySelectMove){ // next one is SELECT. the first time encounter is not SELECT
                     if (drawPanel.history.index>0){ // at least two more following
                         DrawingPanel.History.HistoryInstance temp1 =  drawPanel.history.historyLine.get(drawPanel.history.index+2);
@@ -201,7 +225,7 @@ class DrawingFrame extends JFrame implements ActionListener {
                             DrawingPanel.History.HistorySelectMove temp1A=(DrawingPanel.History.HistorySelectMove) temp1;
                             temp1A.shapeChanged.move(temp1A.coordinate[0]-tempA.coordinate[0],temp1A.coordinate[1]-tempA.coordinate[1]);
                             
-                            System.out.println(temp1A.coordinate[0]);
+                            //System.out.println(temp1A.coordinate[0]);
                             
                             drawPanel.history.index++;
                             drawPanel.history.index++;
@@ -216,7 +240,15 @@ class DrawingFrame extends JFrame implements ActionListener {
                     drawPanel.repaint();
                 }
             }
-        
+            /*for(DrawingPanel.History.HistoryInstance a: drawPanel.history.historyLine){
+                if(a instanceof DrawingPanel.History.HistoryDraw){
+                    DrawingPanel.History.HistoryDraw b=(DrawingPanel.History.HistoryDraw) a;
+                    System.out.println(b.shapeChanged);}
+                else if(a instanceof DrawingPanel.History.HistoryCut){
+                    DrawingPanel.History.HistoryCut b=(DrawingPanel.History.HistoryCut) a;
+                    System.out.println(b.shapeChanged);}
+            }
+            System.out.println(drawPanel.history.index);*/ //testing
         });
         
         toolbar.add(redoButton);
