@@ -8,6 +8,8 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
+import java.util.List;
+import java.util.ArrayList;
 
 class DrawingFrame extends JFrame implements ActionListener {
     //private static final int SMALL = 4;
@@ -114,7 +116,15 @@ class DrawingFrame extends JFrame implements ActionListener {
         JButton selectButton = new JButton("Select");
         selectButton.addActionListener(e -> drawPanel.setMode(DrawingMode.SELECT));
         toolbar.add(selectButton);
-
+        
+        JButton groupButton = new JButton("Group");
+        groupButton.addActionListener(e -> drawPanel.setMode(DrawingMode.GROUP));
+        toolbar.add(groupButton);
+        
+        JButton ungroupButton = new JButton("Ungroup");
+        ungroupButton.addActionListener(e -> drawPanel.setMode(DrawingMode.UNGROUP));
+        toolbar.add(ungroupButton);
+        
         JButton copyButton = new JButton("Copy");
         copyButton.addActionListener(e -> {
             drawPanel.setMode(DrawingMode.COPY);
@@ -122,22 +132,24 @@ class DrawingFrame extends JFrame implements ActionListener {
             for (CustomShape shape : drawPanel.selectedShapes) {
                 drawPanel.clipboardShape.add(drawPanel.cloneShape(shape));
             }
-        
+            
         });
         toolbar.add(copyButton);
 
         JButton cutButton = new JButton("Cut");
         cutButton.addActionListener(e -> {
             drawPanel.setMode(DrawingMode.CUT);
+            drawPanel.clipboardShape.clear();
             
+            List <CustomShape> templist = new ArrayList<CustomShape>();
             for (CustomShape shape : drawPanel.selectedShapes) {
                 
                 drawPanel.shapes.remove(shape);
                 drawPanel.clipboardShape.add(drawPanel.cloneShape(shape));
+                templist.add(shape);
                 drawPanel.isCutOperation = true;
-                drawPanel.history.historyLine.add(drawPanel.history.new HistoryCut(shape));
-                System.out.println(shape);
             }
+            drawPanel.history.historyLine.add(drawPanel.history.new HistoryCut(templist));
             drawPanel.selectedShapes.clear();
             drawPanel.repaint();
             
@@ -157,13 +169,13 @@ class DrawingFrame extends JFrame implements ActionListener {
                 DrawingPanel.History.HistoryInstance temp = drawPanel.history.historyLine.get(drawPanel.history.index);
                 if(temp instanceof DrawingPanel.History.HistoryCut){
                     DrawingPanel.History.HistoryCut tempA=(DrawingPanel.History.HistoryCut) temp;
-                    drawPanel.shapes.add(tempA.shapeChanged); 
+                    drawPanel.shapes.addAll(tempA.shapesChanged); 
                     drawPanel.history.index--;
                     drawPanel.repaint();
                 }else if(temp instanceof DrawingPanel.History.HistoryPaste){
                     DrawingPanel.History.HistoryPaste tempA=(DrawingPanel.History.HistoryPaste) temp;
-                    drawPanel.shapes.remove(tempA.shapeChanged); // latest draw remove
-
+                    drawPanel.shapes.removeAll(tempA.shapesChanged); // latest draw remove
+                    drawPanel.selectedShapes.removeAll(tempA.shapesChanged);
                     drawPanel.history.index--;
                     drawPanel.repaint();
                 }else if(temp instanceof DrawingPanel.History.HistorySelectMove){
@@ -185,40 +197,71 @@ class DrawingFrame extends JFrame implements ActionListener {
                     //System.out.println(drawPanel.modeHistory.get(drawPanel.modeHistory.size()-1));
                     DrawingPanel.History.HistoryDraw tempA=(DrawingPanel.History.HistoryDraw) temp;
                     drawPanel.shapes.remove(tempA.shapeChanged); // latest draw remove
+                    drawPanel.selectedShapes.remove(tempA.shapeChanged);
                     drawPanel.history.index--;
                     drawPanel.repaint();
+                }else if(temp instanceof DrawingPanel.History.HistoryGroupMove){ // GROUP
+                    DrawingPanel.History.HistoryGroupMove tempA=(DrawingPanel.History.HistoryGroupMove) temp;
+                    
+                    for (int i=0;i< tempA.shapesChanged.size();i++){
+                        
+                        tempA.shapesChanged.get(i).move(tempA.coordinatesBegin.get(i)[0]-tempA.coordinatesEnd.get(i)[0],tempA.coordinatesBegin.get(i)[1]-tempA.coordinatesEnd.get(i)[1]);
+                    }
+                    drawPanel.history.index--;
+                    drawPanel.repaint();
+                }/*else if(temp instanceof DrawingPanel.History.HistoryGroupPaste){ // GROUP
+                    DrawingPanel.History.HistoryGroupPaste tempA=(DrawingPanel.History.HistoryGroupPaste) temp;
+                    
+                    for (CustomShape tempB: tempA.shapesChanged){
+                        
+                        drawPanel.shapes.remove(tempB);
+                    }
+                    drawPanel.history.index--;
+                    drawPanel.repaint();
+                }*/
+            }
+            for(DrawingPanel.History.HistoryInstance a: drawPanel.history.historyLine){
+                System.out.println(" ");
+                if(a instanceof DrawingPanel.History.HistoryDraw){
+                    //DrawingPanel.History.HistoryDraw b=(DrawingPanel.History.HistoryDraw) a;
+                    //System.out.println(b.shapeChanged);
+                    System.out.print("draw");
+                }else if(a instanceof DrawingPanel.History.HistoryCut){
+                    //DrawingPanel.History.HistoryCut b=(DrawingPanel.History.HistoryCut) a;
+                    //System.out.println(b.shapeChanged);
+                    System.out.print("cut");
+                }else if(a instanceof DrawingPanel.History.HistoryPaste){
+                    System.out.print("paste");
+                }else if(a instanceof DrawingPanel.History.HistorySelectMove){
+                    System.out.print("singlemove");
+                }else if(a instanceof DrawingPanel.History.HistoryGroupMove){
+                    System.out.print("groupmove");
                 }
             }
-            /*for(DrawingPanel.History.HistoryInstance a: drawPanel.history.historyLine){
-                if(a instanceof DrawingPanel.History.HistoryDraw){
-                    DrawingPanel.History.HistoryDraw b=(DrawingPanel.History.HistoryDraw) a;
-                    System.out.println(b.shapeChanged);}
-                else if(a instanceof DrawingPanel.History.HistoryCut){
-                    DrawingPanel.History.HistoryCut b=(DrawingPanel.History.HistoryCut) a;
-                    System.out.println(b.shapeChanged);}
-            }
-            System.out.println(drawPanel.history.index);*/ //testing
+            //System.out.println(drawPanel.history.index); //testing
+            //System.out.println(drawPanel.history.index);
         });
         toolbar.add(undoButton);
         
         JButton redoButton = new JButton("Redo");
         redoButton.addActionListener(e -> {
-            
+            System.out.println(drawPanel.history.index);
+            //System.out.println(drawPanel.history.historyLine.size()-1);
             if (drawPanel.history.index<drawPanel.history.historyLine.size()-1){ // at least one more following
                 DrawingPanel.History.HistoryInstance temp = drawPanel.history.historyLine.get(drawPanel.history.index+1);
                 
                 if(temp instanceof DrawingPanel.History.HistoryCut){
                     DrawingPanel.History.HistoryCut tempA=(DrawingPanel.History.HistoryCut) temp;
-                    drawPanel.shapes.remove(tempA.shapeChanged); // latest draw remove
+                    drawPanel.shapes.removeAll(tempA.shapesChanged); // latest draw remove
                     drawPanel.history.index++;
                     drawPanel.repaint();
                 }else if(temp instanceof DrawingPanel.History.HistoryPaste){
                     DrawingPanel.History.HistoryPaste tempA=(DrawingPanel.History.HistoryPaste) temp;
-                    drawPanel.shapes.add(tempA.shapeChanged); 
+                    drawPanel.shapes.addAll(tempA.shapesChanged); 
                     drawPanel.history.index++;
                     drawPanel.repaint();
                 }else if(temp instanceof DrawingPanel.History.HistorySelectMove){ // next one is SELECT. the first time encounter is not SELECT
-                    if (drawPanel.history.index>0){ // at least two more following
+                    if (drawPanel.history.historyLine.size()-drawPanel.history.index>=3){ // at least two more following
                         DrawingPanel.History.HistoryInstance temp1 =  drawPanel.history.historyLine.get(drawPanel.history.index+2);
                         if(temp1 instanceof DrawingPanel.History.HistorySelectMove){ // this next following is also SELECT
                             DrawingPanel.History.HistorySelectMove tempA=(DrawingPanel.History.HistorySelectMove) temp;
@@ -238,7 +281,27 @@ class DrawingFrame extends JFrame implements ActionListener {
                     drawPanel.shapes.add(tempA.shapeChanged);
                     drawPanel.history.index++;
                     drawPanel.repaint();
-                }
+                }else if(temp instanceof DrawingPanel.History.HistoryGroupMove){ // GROUP
+                    DrawingPanel.History.HistoryGroupMove tempA=(DrawingPanel.History.HistoryGroupMove) temp;
+                    
+                    for (int i=0;i< tempA.shapesChanged.size();i++){
+                        
+                        tempA.shapesChanged.get(i).move(tempA.coordinatesEnd.get(i)[0]-tempA.coordinatesBegin.get(i)[0],tempA.coordinatesEnd.get(i)[1]-tempA.coordinatesBegin.get(i)[1]);
+                        if(!(drawPanel.selectedShapes.contains(tempA.shapesChanged.get(i))))drawPanel.selectedShapes.add(tempA.shapesChanged.get(i));
+                    }
+                    
+                    drawPanel.history.index++;
+                    drawPanel.repaint();
+                }/*else if(temp instanceof DrawingPanel.History.HistoryGroupPaste){
+                    DrawingPanel.History.HistoryGroupPaste tempA=(DrawingPanel.History.HistoryGroupPaste) temp;
+                    for (CustomShape tempB: tempA.shapesChanged){
+                        
+                        drawPanel.shapes.add(tempB);
+                    }
+
+                    drawPanel.history.index++;
+                    drawPanel.repaint();
+                }*/
             }
             /*for(DrawingPanel.History.HistoryInstance a: drawPanel.history.historyLine){
                 if(a instanceof DrawingPanel.History.HistoryDraw){
@@ -249,6 +312,7 @@ class DrawingFrame extends JFrame implements ActionListener {
                     System.out.println(b.shapeChanged);}
             }
             System.out.println(drawPanel.history.index);*/ //testing
+            
         });
         
         toolbar.add(redoButton);
