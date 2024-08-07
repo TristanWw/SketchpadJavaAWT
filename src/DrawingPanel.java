@@ -241,6 +241,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
     public void mouseReleased(MouseEvent e) {
         System.out.println("release");
         if (mode == DrawingMode.SELECT && selectedShapes.size() != 0) { //SELECT MODE, NOT NULL
+            
             history.historyLine.add(history.new HistorySelectMove(selectedShapes.get(selectedShapes.size()-1))); //add history, only one item in SELECT_MOVE
             
             selectedShapes.remove(selectedShapes.size()-1);
@@ -361,9 +362,11 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
         } else if (mode == DrawingMode.SELECT){
             
             if(selectedShapes.size()<=1){
-            
-                if(history.index>=1){history.index= history.index-2;}  // press->release->click, even with one click
-                if(history.historyLine.size()>=2){history.historyLine.remove(history.historyLine.size()-1);history.historyLine.remove(history.historyLine.size()-1);}
+                if(selectedShapes.size()!=0){
+                    if(history.index>=1){history.index= history.index-2;}  // press->release->click, even with one click
+                    if(history.historyLine.size()>=2){history.historyLine.remove(history.historyLine.size()-1);history.historyLine.remove(history.historyLine.size()-1);}}
+                
+                currentShape=null;
                 boolean found=false;
                 for (CustomShape shape : shapes) {
                     if (shape.contains(startPoint)) { // found the shape
@@ -398,28 +401,28 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
         System.out.println("press");
         startPoint = e.getPoint();
         if (mode == DrawingMode.SELECT) {
-            if(selectedShapes.size()<=1){
-                boolean found=false;
-                for (CustomShape shape : shapes) {
-                    if (shape.contains(startPoint)) { // found, clicked a shape
-                        found=true;
-                        if(selectedShapes.contains(shape)){ // clicked a shape in select
-                            selectedShapes.add(shape); // release will remove this
-                            history.historyLine.add(history.new HistorySelectMove(shape));// for clicked to remove
-                        } else{// clicked a shape not in select
-                            selectedShapes.clear();
-                            selectedShapes.add(shape);
+            
+            boolean found=false;
+            for (CustomShape shape : shapes) {
+                if (shape.contains(startPoint)) { // found, clicked a shape
+                    found=true;
+                    //currentShape=shape;
+                    if(selectedShapes.contains(shape)){ // clicked a shape in select
+                        selectedShapes.add(shape); // release will remove this
+                        history.historyLine.add(history.new HistorySelectMove(shape));// for clicked to remove
+                    } else{// clicked a shape not in select
+                        selectedShapes.clear();
+                        selectedShapes.add(shape);
                             
-                            repaint();
-                            history.historyLine.add(history.new HistorySelectMove(shape));
-                            //System.out.println(history.historyLine.size());
-                        } 
-                        break;
-                    }
+                        repaint();
+                        history.historyLine.add(history.new HistorySelectMove(shape));
+                        //System.out.println(history.historyLine.size());
+                    } 
+                    break;
                 }
-                if(found==false){selectedShapes.clear();repaint();}
-                
             }
+            if(found==false){selectedShapes.clear();repaint();/*history.historyLine.add(history.new HistorySelectMove(shapes.get(0)));*/}
+            //else()
             
         }else if(mode == DrawingMode.GROUP){
             for (CustomShape shape : shapes) {

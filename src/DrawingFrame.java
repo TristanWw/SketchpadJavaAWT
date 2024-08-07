@@ -114,7 +114,9 @@ class DrawingFrame extends JFrame implements ActionListener {
         toolbar.add(closedPolygonButton);
 
         JButton selectButton = new JButton("Select");
-        selectButton.addActionListener(e -> drawPanel.setMode(DrawingMode.SELECT));
+        selectButton.addActionListener(e -> {
+            
+            if(drawPanel.shapes.size()>0){drawPanel.setMode(DrawingMode.SELECT);}});
         toolbar.add(selectButton);
         
         JButton groupButton = new JButton("Group");
