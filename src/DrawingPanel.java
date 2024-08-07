@@ -249,7 +249,9 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
             
             history.historyLine.add(history.new HistorySelectMove(selectedShapes.get(selectedShapes.size()-1))); //add history, only one item in SELECT_MOVE
             System.out.print(selectedShapes.size());
-            selectedShapes.remove(selectedShapes.size()-1);
+            if(currentShape!=null){selectedShapes.remove(selectedShapes.size()-1);}
+            
+            
             repaint();
             hasReleased=true;
 
