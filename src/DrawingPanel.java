@@ -400,7 +400,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
                     
                     if(selectedShapes.contains(shape)){ // clicked a shape in select
                         if(selectedShapes.size()==1){
-                            //selectedShapes.add(shape); // release will remove this
+                           
                             currentShape=null;
                             history.historyLine.add(history.new HistorySelectMove(shape));// for clicked to remove
                         }else if(selectedShapes.size()>1){
@@ -411,7 +411,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
                         }
                         
                     } else{// clicked a shape not in select
-                        //selectedShapes.clear();
+                        selectedShapes.clear();
                         selectedShapes.add(shape);
                         repaint();
                         currentShape=shape;
@@ -421,7 +421,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
                     break;
                 }
             }
-            if(found==false){selectedShapes.clear();repaint();}
+            if(found==false){selectedShapes.clear();repaint();currentShape=null;}
             
             
         }else if(mode == DrawingMode.GROUP){
