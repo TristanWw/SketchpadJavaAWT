@@ -34,6 +34,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
     
     public  List<CustomShape> clipboardShape = new ArrayList<CustomShape>();
     public  boolean isCutOperation = false;
+    public  boolean hasReleased = false;
     
     class History implements Serializable {
         private static final long SerialVerionUID = 1L;
@@ -59,7 +60,11 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
             CustomShape shapeChanged;double[] coordinate;
             HistorySelectMove(CustomShape s){
                 super();
-                shapeChanged=s;coordinate=s.getCoordinate();}}
+                shapeChanged=s;
+                if(s!=null){coordinate=s.getCoordinate();}
+                
+            }
+        }
         
         class HistoryCut extends HistoryInstance implements Serializable{
             private static final long SerialVerionUID = 1L;
@@ -243,10 +248,10 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
         if (mode == DrawingMode.SELECT && selectedShapes.size() != 0) { //SELECT MODE, NOT NULL
             
             history.historyLine.add(history.new HistorySelectMove(selectedShapes.get(selectedShapes.size()-1))); //add history, only one item in SELECT_MOVE
-            
+            System.out.print(selectedShapes.size());
             selectedShapes.remove(selectedShapes.size()-1);
-            //System.out.println(selectedShapes.size());
             repaint();
+            hasReleased=true;
 
         } /*else if (mode != DrawingMode.SELECT && currentShape != null) {
             shapes.add(currentShape);
@@ -361,35 +366,19 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
          
         } else if (mode == DrawingMode.SELECT){
             
-            if(selectedShapes.size()<=1){
-                if(selectedShapes.size()!=0){
-                    if(history.index>=1){history.index= history.index-2;}  // press->release->click, even with one click
-                    if(history.historyLine.size()>=2){history.historyLine.remove(history.historyLine.size()-1);history.historyLine.remove(history.historyLine.size()-1);}}
+           
+                //System.out.print(selectedShapes.size());
+            if(hasReleased==true){
+                if(history.index>=1){history.index=history.index-2;}  // press->release->click, even with one click
+                if(history.historyLine.size()>=2){history.historyLine.remove(history.historyLine.size()-1);history.historyLine.remove(history.historyLine.size()-1);}
+            }
+            
                 
-                currentShape=null;
-                boolean found=false;
-                for (CustomShape shape : shapes) {
-                    if (shape.contains(startPoint)) { // found the shape
-                        found=true;
-                        //if(selectedShapes.size()>0){System.out.println(selectedShapes.get(0));}//testing
-                        //System.out.println(selectedShapes.size()); //testing
-                        
-                        if(selectedShapes.contains(shape)){ // clicked the same shape twice
-                            selectedShapes.remove(shape);
-                            
-                        }else{  // clicked a different shape
-                            selectedShapes.clear();
-                            selectedShapes.add(shape);
-                            //System.out.println(shape);
-                        }    
-                        //System.out.println(selectedShapes.size());
-                        //history.historyLine.add(history.new HistorySelectMove(shape));
-                        break;
-                    }
-                }
-                if(found==false){selectedShapes.clear();}
-                repaint();
-            }else{selectedShapes.clear();repaint();}
+            if(currentShape==null){selectedShapes.clear();}
+            else{selectedShapes.add(currentShape);}
+                
+            repaint();
+            
             
         }else if(mode != DrawingMode.SELECT && mode != DrawingMode.OPEN_POLYGON && mode != DrawingMode.CLOSED_POLYGON && mode != DrawingMode.COPY && mode != DrawingMode.CUT && mode != DrawingMode.PASTE && mode != DrawingMode.GROUP && mode != DrawingMode.UNGROUP){
             if(history.historyLine.get(history.historyLine.size()-1) instanceof History.HistoryDraw){history.historyLine.remove(history.historyLine.size()-1);history.index--;}
@@ -401,28 +390,37 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
         System.out.println("press");
         startPoint = e.getPoint();
         if (mode == DrawingMode.SELECT) {
-            
+            hasReleased=false;
             boolean found=false;
             for (CustomShape shape : shapes) {
                 if (shape.contains(startPoint)) { // found, clicked a shape
                     found=true;
-                    //currentShape=shape;
+                    
                     if(selectedShapes.contains(shape)){ // clicked a shape in select
-                        selectedShapes.add(shape); // release will remove this
-                        history.historyLine.add(history.new HistorySelectMove(shape));// for clicked to remove
+                        if(selectedShapes.size()==1){
+                            //selectedShapes.add(shape); // release will remove this
+                            currentShape=null;
+                            history.historyLine.add(history.new HistorySelectMove(shape));// for clicked to remove
+                        }else if(selectedShapes.size()>1){
+                            selectedShapes.clear();
+                            currentShape=shape;
+                            selectedShapes.add(shape); // release will remove this
+                            history.historyLine.add(history.new HistorySelectMove(shape));// for clicked to remove
+                        }
+                        
                     } else{// clicked a shape not in select
-                        selectedShapes.clear();
+                        //selectedShapes.clear();
                         selectedShapes.add(shape);
-                            
                         repaint();
+                        currentShape=shape;
                         history.historyLine.add(history.new HistorySelectMove(shape));
-                        //System.out.println(history.historyLine.size());
+                        
                     } 
                     break;
                 }
             }
-            if(found==false){selectedShapes.clear();repaint();/*history.historyLine.add(history.new HistorySelectMove(shapes.get(0)));*/}
-            //else()
+            if(found==false){selectedShapes.clear();repaint();}
+            
             
         }else if(mode == DrawingMode.GROUP){
             for (CustomShape shape : shapes) {

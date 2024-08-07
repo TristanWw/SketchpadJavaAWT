@@ -255,6 +255,7 @@ class DrawingFrame extends JFrame implements ActionListener {
                 if(temp instanceof DrawingPanel.History.HistoryCut){
                     DrawingPanel.History.HistoryCut tempA=(DrawingPanel.History.HistoryCut) temp;
                     drawPanel.shapes.removeAll(tempA.shapesChanged); // latest draw remove
+                    drawPanel.selectedShapes.removeAll(tempA.shapesChanged);
                     drawPanel.history.index++;
                     drawPanel.repaint();
                 }else if(temp instanceof DrawingPanel.History.HistoryPaste){
