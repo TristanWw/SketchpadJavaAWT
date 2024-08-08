@@ -88,6 +88,10 @@ class DrawingFrame extends JFrame implements ActionListener {
     }
 
     private void setupToolbar() {
+        JButton scribbledButton = new JButton("ScribbledLine");
+        scribbledButton.addActionListener(e -> drawPanel.setMode(DrawingMode.SCRIBBED));
+        toolbar.add(scribbledButton);
+
         JButton circleButton = new JButton("Circle");
         circleButton.addActionListener(e -> drawPanel.setMode(DrawingMode.CIRCLE));
         toolbar.add(circleButton);
@@ -379,7 +383,7 @@ class DrawingFrame extends JFrame implements ActionListener {
         if (option == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             try (FileOutputStream fileOut = new FileOutputStream(file); ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
-                out.writeObject(drawPanel); // Assuming drawPanel is Serializable
+                out.writeObject(drawPanel);
                 System.out.println("File saved: " + file.getAbsolutePath());
             } catch (IOException i) {
                 i.printStackTrace();
