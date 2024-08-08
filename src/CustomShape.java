@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.awt.geom.*;
 import java.io.Serializable;
+import java.util.List;
+import java.util.ArrayList;
 
 class CustomShape implements Serializable {
     private static final long SerialVerionUID = 1L;
@@ -90,5 +92,102 @@ class CustomShape implements Serializable {
             shape = path.createTransformedShape(transform);
         }
         //System.out.println("New shape: " + shape.getBounds());
+    }
+}
+
+class Scribbled extends CustomShape {
+    private List<Point> scribbledPoints;
+
+    public Scribbled(Shape shape, Color color) {
+        super(shape, color);
+        this.scribbledPoints = new ArrayList<Point>();
+    }
+
+    @Override
+    public void draw(Graphics2D g) {
+        if (scribbledPoints.size() == 0)
+            return;
+        Point last = scribbledPoints.get(0);
+        for (int i = 1; i < scribbledPoints.size(); i++) {
+            g.drawLine(last.x, last.y, scribbledPoints.get(i).x, scribbledPoints.get(i).y);
+            last = scribbledPoints.get(i);
+        }
+    }
+
+    @Override
+    public void gradient(Graphics2D g) {
+        if (scribbledPoints.size() == 0)
+            return;
+
+        Point last = scribbledPoints.get(0);
+        for (int i = 1; i < scribbledPoints.size(); i++) {
+            Point current = scribbledPoints.get(i);
+
+            GradientPaint gradientPaint = new GradientPaint(
+                    last.x, last.y, Color.CYAN,
+                    current.x, current.y, Color.MAGENTA
+                    );
+
+            g.setPaint(gradientPaint);
+            g.setStroke(new BasicStroke(2));
+            g.drawLine(last.x, last.y, current.x, current.y);
+
+            last = current;
+        }
+    }
+
+    private boolean isPointNearLineSegment(Point p, Point start, Point end, double epsilon) {
+        // Calculate the length of the line segment
+        double segmentLengthSquared = start.distanceSq(end);
+        if (segmentLengthSquared == 0.0) {
+            // The line segment is just a point
+            return p.distance(start) < epsilon;
+        }
+
+        // Projection formula to find the projection of point p onto the line segment
+        double t = ((p.x - start.x) * (end.x - start.x) + (p.y - start.y) * (end.y - start.y)) / segmentLengthSquared;
+        t = Math.max(0, Math.min(1, t));
+
+        // Find the nearest point on the segment to p
+        double nearestX = start.x + t * (end.x - start.x);
+        double nearestY = start.y + t * (end.y - start.y);
+        Point nearestPoint = new Point((int) nearestX, (int) nearestY);
+
+        // Check the distance from p to the nearest point on the line segment
+        return p.distance(nearestPoint) < epsilon;
+    }
+
+    @Override
+    public boolean contains(Point p) {
+        // calculate the distance between the points on the scribbled line and p
+        // to determine whether p is on the scribbled line
+        double epsilon = 5.0; // Threshold distance to determine if the point is on the line
+
+        for (int i = 0; i < scribbledPoints.size() - 1; i++) {
+            Point start = scribbledPoints.get(i);
+            Point end = scribbledPoints.get(i + 1);
+
+            if (isPointNearLineSegment(p, start, end, epsilon)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public double[] getCoordinate() {
+        return null;
+    }
+
+    @Override
+    public void move(double dx, double dy) {
+        for (Point p : scribbledPoints) {
+            p.x += dx;
+            p.y += dy;
+        }
+    }
+
+    public void addPoints(Point p) {
+        scribbledPoints.add(p);
     }
 }
