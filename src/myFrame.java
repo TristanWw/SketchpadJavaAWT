@@ -51,16 +51,22 @@ public class myFrame extends JFrame implements ActionListener {
         JMenuItem cut = new JMenuItem("Cut");
         JMenuItem copy = new JMenuItem("Copy");
         JMenuItem paste = new JMenuItem("Paste");
+        JMenuItem undo = new JMenuItem("Undo");
+        JMenuItem redo = new JMenuItem("Redo");
         group.addActionListener(this);
         ungroup.addActionListener(this);
         cut.addActionListener(this);
         copy.addActionListener(this);
         paste.addActionListener(this);
+        undo.addActionListener(this);
+        redo.addActionListener(this);
         menu2.add(group);
         menu2.add(ungroup);
         menu2.add(cut);
         menu2.add(copy);
         menu2.add(paste);
+        menu2.add(undo);
+        menu2.add(redo);
 
         JMenu menu3 = new JMenu("Color");
         // Color subsection
@@ -162,6 +168,12 @@ public class myFrame extends JFrame implements ActionListener {
                 break;
             case "Paste":
                 drawPanel.paste();
+                break;
+            case "Undo":
+                drawPanel.undo();
+                break;
+            case "Redo":
+                drawPanel.redo();
                 break;
             case "Debug":
                 drawPanel.debug();

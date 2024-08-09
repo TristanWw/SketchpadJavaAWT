@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -23,9 +24,35 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
     private List<baseObj> selectedObjs;
     private List<baseObj> tempRenderObjs;
     private List<baseObj> copyObjs;
+    // Stack to store undo and redo actions
+    private Stack<Action> undoStack;
+    private Stack<Action> redoStack;
+
+    public void undo() {
+        selectedObjs.clear();
+        if (!undoStack.isEmpty()) {
+            Action lastAction = undoStack.pop();
+            redoStack.push(new Action(new ArrayList<>(baseObjs), lastAction.originalState, lastAction.type));
+            baseObjs.clear();
+            baseObjs.addAll(lastAction.originalState);
+            repaint();
+        }
+    }
+
+    public void redo() {
+        selectedObjs.clear();
+        if (!redoStack.isEmpty()) {
+            Action lastAction = redoStack.pop();
+            undoStack.push(new Action(new ArrayList<>(baseObjs), lastAction.newState, lastAction.type));
+            baseObjs.clear();
+            baseObjs.addAll(lastAction.originalState);
+            repaint();
+        }
+    }
 
     public void copy() {
         // copy the selected objects into the copyObjs array
+        System.out.println("copy selected obj to baseObjs array");
         for (baseObj o : selectedObjs) {
             copyObjs.add(o.copy());
         }
@@ -33,10 +60,15 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
 
     public void paste() {
         // paste the copied objests to the panel
+        System.out.println("paste obj to baseObjs array");
+        List<baseObj> originalState = new ArrayList<>(baseObjs);
         for (baseObj o : copyObjs) {
             o.translate(10, 10); // add aoffset
             baseObjs.add(o);
         }
+        List<baseObj> newState = new ArrayList<>(baseObjs);
+        undoStack.push(new Action(originalState, newState, ActionType.ADD));
+        redoStack.clear(); // Clear redo stack whenever a new action is performed
         copyObjs.clear();
         repaint();
     }
@@ -47,7 +79,7 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
             baseObj o = selectedObjs.get(i);
             if (baseObjs.contains(o)) {
                 // remove from baseObjs
-                baseObjs.remove(o);
+                removeObj(o);
             }
         }
         selectedObjs.clear();
@@ -55,10 +87,25 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
     }
 
     public void debug() {
+        System.out.println("----------------");
         System.out.println("selectedObjs.size:" + selectedObjs.size());
         System.out.println("baseObjs.size:" + baseObjs.size());
         System.out.println("tempRenderObjs.size:" + tempRenderObjs.size());
         System.out.println("copyObjs.size:" + copyObjs.size());
+        System.out.println("undoStack.size:" + undoStack.size());
+        System.out.println("redoStack.size:" + redoStack.size());
+        System.out.println("++++++++++++++++");
+        for (Action a : redoStack) {
+            System.out.print(
+                    "redoStack-> newstate size:" + a.newState.size() + " originalstate size:" + a.originalState.size());
+            System.out.println("");
+        }
+        for (Action a : undoStack) {
+            System.out.print(
+                    "undoStack-> newstate size:" + a.newState.size() + " originalstate size:" + a.originalState.size());
+            System.out.println("");
+        }
+        System.out.println("===============");
     }
 
     public void addTempRenderObj(baseObj o) {
@@ -71,6 +118,8 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
 
     public void groupSelectedObjs() {
         // put selected objects into one object and then put into the array
+        System.out.println("grouped obj add to baseObjs array");
+        List<baseObj> originalState = new ArrayList<>(baseObjs);
         groupBaseobjs g = new groupBaseobjs();
         for (int i = 0; i < selectedObjs.size(); i++) {
             baseObj o = selectedObjs.get(i);
@@ -79,6 +128,9 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         }
         baseObjs.add(g);
         selectedObjs.clear();
+        List<baseObj> newState = new ArrayList<>(baseObjs);
+        undoStack.push(new Action(originalState, newState, ActionType.ADD));
+        redoStack.clear(); // Clear redo stack whenever a new action is performed
 
         // System.out.println("selectedObjs.size:" + selectedObjs.size());
         // System.out.println("baseObjs.size:" + baseObjs.size());
@@ -88,6 +140,8 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
 
     public void ungroupSelectedObjs() {
         // ungroup the selected groupBaseobjs object and rejoin the array
+        System.out.println("grouped obj removed to baseObjs array");
+        List<baseObj> originalState = new ArrayList<>(baseObjs);
         for (int i = 0; i < selectedObjs.size(); i++) {
             if (selectedObjs.get(i) instanceof groupBaseobjs) {
                 baseObj sObj = selectedObjs.get(i);
@@ -102,6 +156,9 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
             }
         }
         selectedObjs.clear();
+        List<baseObj> newState = new ArrayList<>(baseObjs);
+        undoStack.push(new Action(originalState, newState, ActionType.ADD));
+        redoStack.clear(); // Clear redo stack whenever a new action is performed
         // System.out.println("selectedObjs.size:" + selectedObjs.size());
         // System.out.println("baseObjs.size:" + baseObjs.size());
         setMode(DrawingMode.SELECT);
@@ -113,6 +170,13 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         modeHandler = new SelectHandler(this);
         // clear the selectedObjs array
         selectedObjs.clear();
+        // clear the tempRenderObjs array
+        tempRenderObjs.clear();
+        // clear the copyObjs
+        copyObjs.clear();
+        // clear the history stack
+        undoStack.clear();
+        redoStack.clear();
     }
 
     public void setPanelColor(Color color) {
@@ -129,6 +193,8 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         this.selectedObjs = new ArrayList<baseObj>();
         this.tempRenderObjs = new ArrayList<baseObj>();
         this.copyObjs = new ArrayList<baseObj>();
+        this.undoStack = new Stack<Action>();
+        this.redoStack = new Stack<Action>();
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
     }
@@ -139,6 +205,8 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         this.selectedObjs = new ArrayList<baseObj>();
         this.tempRenderObjs = new ArrayList<baseObj>();
         this.copyObjs = new ArrayList<baseObj>();
+        this.undoStack = new Stack<Action>();
+        this.redoStack = new Stack<Action>();
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
     }
@@ -149,6 +217,8 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         selectedObjs.clear();
         tempRenderObjs.clear();
         copyObjs.clear();
+        redoStack.clear();
+        undoStack.clear();
         repaint();
     }
 
@@ -176,12 +246,22 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
 
     void addObj(baseObj o) {
         System.out.println("add obj to baseObjs array");
+        List<baseObj> originalState = new ArrayList<>(baseObjs);
         this.baseObjs.add(o);
+        List<baseObj> newState = new ArrayList<>(baseObjs);
+        undoStack.push(new Action(originalState, newState, ActionType.ADD));
+        redoStack.clear(); // Clear redo stack whenever a new action is performed
+        repaint();
     }
 
     void removeObj(baseObj o) {
         System.out.println("remove obj from baseObjs array");
+        List<baseObj> originalState = new ArrayList<>(baseObjs);
         this.baseObjs.remove(o);
+        List<baseObj> newState = new ArrayList<>(baseObjs);
+        undoStack.push(new Action(originalState, newState, ActionType.REMOVE));
+        redoStack.clear(); // Clear redo stack whenever a new action is performed
+        repaint();
     }
 
     void addSelect(baseObj o) {
