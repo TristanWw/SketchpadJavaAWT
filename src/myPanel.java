@@ -15,6 +15,7 @@ enum DrawingMode {
     ECLIPSE,
     CIRCLE,
     CLOSEPOLYGON,
+    OPENPOLYGON,
     SELECT
 }
 
@@ -251,6 +252,10 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
             case CIRCLE:
                 selectedObjs.clear();
                 modeHandler = new CircleHandler(this);
+                break;
+            case OPENPOLYGON:
+                selectedObjs.clear();
+                modeHandler = new OpenPolygonHandler(this);
                 break;
             case CLOSEPOLYGON:
                 selectedObjs.clear();

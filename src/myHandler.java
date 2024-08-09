@@ -15,6 +15,90 @@ interface DrawingModeHandler {
     void myMouseClicked(MouseEvent e);
 }
 
+class OpenPolygonHandler implements DrawingModeHandler, Serializable {
+    private myPanel panel;
+    private OpenPolygon openPolygon;
+    private boolean isDrawingPolygon = false;
+    private Point lastPoint = null;
+
+    public OpenPolygonHandler(myPanel panel) {
+        this.panel = panel;
+        openPolygon = new OpenPolygon();
+        openPolygon.setColor(panel.getPanelColor());
+    }
+
+    @Override
+    public void myMousePressed(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON3) { // Right-click
+            finalizePolygon();
+        }
+    }
+
+    @Override
+    public void myMouseDragged(MouseEvent e) {
+        if (isDrawingPolygon && lastPoint != null) {
+            panel.resetTempRenderList(); // Clear previous temporary objects
+
+            openPolygon.setColor(panel.getPanelColor());
+
+            // Add the line segment from the last point to the current cursor position
+            Line temporaryLine = new Line(new Line2D.Double(lastPoint, e.getPoint()));
+            temporaryLine.setColor(panel.getPanelColor());
+
+            // Add the temporary line and the polygon to the panel
+            panel.addTempRenderObj(temporaryLine);
+            panel.addTempRenderObj(openPolygon);
+            panel.repaint();
+        }
+    }
+
+    @Override
+    public void myMouseReleased(MouseEvent e) {
+        if (isDrawingPolygon) {
+            // After releasing the mouse button, finalize the addition of a new point
+            if (lastPoint != null) {
+                openPolygon.addPoints(e.getPoint());
+                lastPoint = e.getPoint(); // Update the lastPoint
+                panel.repaint(); // Ensure the panel is repainted after adding points
+            }
+        }
+    }
+
+    @Override
+    public void myMouseClicked(MouseEvent e) {
+        if (!isDrawingPolygon) {
+            // On the first click, add the initial point and start drawing
+            lastPoint = e.getPoint();
+            openPolygon.addPoints(lastPoint);
+            isDrawingPolygon = true;
+        } else {
+            // On subsequent clicks, finalize the current segment and prepare for the next
+            if (lastPoint != null) {
+                openPolygon.addPoints(e.getPoint());
+                lastPoint = e.getPoint();
+            }
+        }
+
+        panel.repaint(); // Ensure the panel is repainted after adding points
+    }
+
+    private void finalizePolygon() {
+        if (isDrawingPolygon) {
+            // Add the openPolygon to the panel
+            openPolygon.setColor(panel.getPanelColor());
+            panel.addObj(openPolygon);
+            panel.repaint();
+            panel.resetTempRenderList();
+            isDrawingPolygon = false; // End drawing mode
+
+            // Clear the openPolygon and prepare for a new one
+            openPolygon = new OpenPolygon();
+            lastPoint = null;
+            openPolygon.setColor(panel.getPanelColor());
+        }
+    }
+}
+
 class ClosePolygonHandler implements DrawingModeHandler, Serializable {
     private myPanel panel;
     private boolean isDrawingPolygon;

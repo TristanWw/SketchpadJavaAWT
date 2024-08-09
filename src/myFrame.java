@@ -129,6 +129,10 @@ public class myFrame extends JFrame implements ActionListener {
         circleButton.addActionListener(e -> drawPanel.setMode(DrawingMode.CIRCLE));
         toolbar.add(circleButton);
 
+        JButton openPolygonButton = new JButton("OpenPolygon");
+        openPolygonButton.addActionListener(e -> drawPanel.setMode(DrawingMode.OPENPOLYGON));
+        toolbar.add(openPolygonButton);
+
         JButton closePolygonButton = new JButton("ClosePolygon");
         closePolygonButton.addActionListener(e -> drawPanel.setMode(DrawingMode.CLOSEPOLYGON));
         toolbar.add(closePolygonButton);
