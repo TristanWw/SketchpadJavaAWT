@@ -13,6 +13,59 @@ interface DrawingModeHandler {
     void myMouseClicked(MouseEvent e);
 }
 
+class EclipseHandler implements DrawingModeHandler, Serializable {
+    private myPanel panel;
+    private Point startPoint;
+    private Eclipse currentEclipse;
+
+    public EclipseHandler(myPanel panel) {
+        this.panel = panel;
+    }
+
+    @Override
+    public void myMouseClicked(MouseEvent e) {
+        // Do nothing for now
+    }
+
+    @Override
+    public void myMouseDragged(MouseEvent e) {
+        if (currentEclipse != null) {
+            Point endPoint = e.getPoint();
+            panel.resetTempRenderList();
+            // Update the current eclipse's size based on drag
+            currentEclipse = new Eclipse(startPoint, endPoint);
+            currentEclipse.setColor(panel.getPanelColor());
+            panel.addTempRenderObj(currentEclipse);
+            panel.repaint();
+        }
+    }
+
+    @Override
+    public void myMousePressed(MouseEvent e) {
+        // Start drawing a new eclipse
+        startPoint = e.getPoint();
+        currentEclipse = new Eclipse(startPoint, startPoint); // Initially, it's a point
+        currentEclipse.setColor(panel.getPanelColor());
+        panel.addTempRenderObj(currentEclipse);
+        panel.repaint();
+    }
+
+    @Override
+    public void myMouseReleased(MouseEvent e) {
+        if (currentEclipse != null) {
+            // Finalize the eclipse on mouse release
+            Point endPoint = e.getPoint();
+            currentEclipse = new Eclipse(startPoint, endPoint);
+            currentEclipse.setColor(panel.getPanelColor());
+            // Possibly add the finalized eclipse to a list of shapes, if needed
+            panel.addObj(currentEclipse);
+            panel.repaint();
+            currentEclipse = null; // Reset the current eclipse
+        }
+        panel.resetTempRenderList();
+    }
+}
+
 class SquareHandler implements DrawingModeHandler, Serializable {
     private myPanel panel;
     private Point startPoint;
