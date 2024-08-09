@@ -262,6 +262,8 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
                 modeHandler = new ClosePolygonHandler(this);
                 break;
             case SELECT:
+                selectedObjs.clear();
+                repaint();
                 modeHandler = new SelectHandler(this);
                 break;
         }

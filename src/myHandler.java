@@ -31,6 +31,12 @@ class OpenPolygonHandler implements DrawingModeHandler, Serializable {
     public void myMousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON3) { // Right-click
             finalizePolygon();
+        } else if (!isDrawingPolygon) {
+            // Start drawing the polygon on first click
+            lastPoint = e.getPoint();
+            openPolygon.addPoints(lastPoint);
+            isDrawingPolygon = true;
+            panel.repaint();
         }
     }
 
@@ -66,20 +72,7 @@ class OpenPolygonHandler implements DrawingModeHandler, Serializable {
 
     @Override
     public void myMouseClicked(MouseEvent e) {
-        if (!isDrawingPolygon) {
-            // On the first click, add the initial point and start drawing
-            lastPoint = e.getPoint();
-            openPolygon.addPoints(lastPoint);
-            isDrawingPolygon = true;
-        } else {
-            // On subsequent clicks, finalize the current segment and prepare for the next
-            if (lastPoint != null) {
-                openPolygon.addPoints(e.getPoint());
-                lastPoint = e.getPoint();
-            }
-        }
-
-        panel.repaint(); // Ensure the panel is repainted after adding points
+        // Not needed for OpenPolygonHandler
     }
 
     private void finalizePolygon() {
@@ -112,20 +105,20 @@ class ClosePolygonHandler implements DrawingModeHandler, Serializable {
 
     @Override
     public void myMousePressed(MouseEvent e) {
-        if (!isDrawingPolygon) {
+        if (e.getButton() == MouseEvent.BUTTON3) { // Right-click
+            finalizePolygon();
+        } else if (!isDrawingPolygon) {
             isDrawingPolygon = true;
             points.clear(); // Start a new polygon
         }
 
-        points.add(e.getPoint()); // Add point on each click
-        tempPolygon = new ClosePolygon(points);
-        tempPolygon.setColor(panel.getPanelColor());
-        panel.resetTempRenderList();
-        panel.addTempRenderObj(tempPolygon);
-        panel.repaint();
-
-        if (e.getButton() == MouseEvent.BUTTON3) { // Right-click
-            finalizePolygon();
+        if (isDrawingPolygon) {
+            points.add(e.getPoint()); // Add point on each click
+            tempPolygon = new ClosePolygon(points);
+            tempPolygon.setColor(panel.getPanelColor());
+            panel.resetTempRenderList();
+            panel.addTempRenderObj(tempPolygon);
+            panel.repaint();
         }
     }
 
