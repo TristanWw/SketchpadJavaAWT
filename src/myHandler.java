@@ -13,6 +13,59 @@ interface DrawingModeHandler {
     void myMouseClicked(MouseEvent e);
 }
 
+class CircleHandler implements DrawingModeHandler, Serializable {
+    private myPanel panel;
+    private Point startPoint;
+    private Circle currentCircle;
+
+    public CircleHandler(myPanel panel) {
+        this.panel = panel;
+    }
+
+    @Override
+    public void myMouseClicked(MouseEvent e) {
+        // Do nothing for now
+    }
+
+    @Override
+    public void myMouseDragged(MouseEvent e) {
+        if (currentCircle != null) {
+            Point endPoint = e.getPoint();
+            panel.resetTempRenderList();
+            // Update the current circle's size based on drag
+            currentCircle = new Circle(startPoint, endPoint);
+            currentCircle.setColor(panel.getPanelColor());
+            panel.addTempRenderObj(currentCircle);
+            panel.repaint();
+        }
+    }
+
+    @Override
+    public void myMousePressed(MouseEvent e) {
+        // Start drawing a new circle
+        startPoint = e.getPoint();
+        currentCircle = new Circle(startPoint, startPoint); // Initially, it's a point
+        currentCircle.setColor(panel.getPanelColor());
+        panel.addTempRenderObj(currentCircle);
+        panel.repaint();
+    }
+
+    @Override
+    public void myMouseReleased(MouseEvent e) {
+        if (currentCircle != null) {
+            // Finalize the circle on mouse release
+            Point endPoint = e.getPoint();
+            currentCircle = new Circle(startPoint, endPoint);
+            currentCircle.setColor(panel.getPanelColor());
+            // Possibly add the finalized circle to a list of shapes, if needed
+            panel.addObj(currentCircle);
+            panel.repaint();
+            currentCircle = null; // Reset the current circle
+        }
+        panel.resetTempRenderList();
+    }
+}
+
 class EclipseHandler implements DrawingModeHandler, Serializable {
     private myPanel panel;
     private Point startPoint;

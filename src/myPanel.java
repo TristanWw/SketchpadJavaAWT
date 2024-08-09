@@ -13,6 +13,7 @@ enum DrawingMode {
     RECTANGLE,
     SQUARE,
     ECLIPSE,
+    CIRCLE,
     SELECT
 }
 
@@ -245,6 +246,10 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
             case ECLIPSE:
                 selectedObjs.clear();
                 modeHandler = new EclipseHandler(this);
+                break;
+            case CIRCLE:
+                selectedObjs.clear();
+                modeHandler = new CircleHandler(this);
                 break;
             case SELECT:
                 modeHandler = new SelectHandler(this);

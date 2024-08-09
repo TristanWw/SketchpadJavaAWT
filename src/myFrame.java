@@ -125,6 +125,10 @@ public class myFrame extends JFrame implements ActionListener {
         eclipseButton.addActionListener(e -> drawPanel.setMode(DrawingMode.ECLIPSE));
         toolbar.add(eclipseButton);
 
+        JButton circleButton = new JButton("Circle");
+        circleButton.addActionListener(e -> drawPanel.setMode(DrawingMode.CIRCLE));
+        toolbar.add(circleButton);
+
         JButton selectButton = new JButton("Select");
         selectButton.addActionListener(e -> drawPanel.setMode(DrawingMode.SELECT));
         toolbar.add(selectButton);
