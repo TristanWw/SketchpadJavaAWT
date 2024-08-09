@@ -20,8 +20,12 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
     private List<baseObj> baseObjs;
     private List<baseObj> selectedObjs;
 
-    public void setColor(Color color) {
+    public void setPanelColor(Color color) {
         myColor = color;
+    }
+
+    public Color getPanelColor() {
+        return myColor;
     }
 
     myPanel() {

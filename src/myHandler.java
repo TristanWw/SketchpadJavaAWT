@@ -25,6 +25,7 @@ class ScribbleHandler implements DrawingModeHandler {
     public void myMousePressed(MouseEvent e) {
         isDrawingScribbledLine = true;
         sLine = new ScribbledLine();
+        sLine.setColor(panel.getPanelColor());
         sLine.addPoints(e.getPoint());
         // first add a line for drag update
         sLine.addPoints(e.getPoint()); // sLine need at least two points
@@ -75,6 +76,7 @@ class LineHandler implements DrawingModeHandler {
         endPoint = e.getPoint();
         // first add a line for drag update
         Line line = new Line(new Line2D.Double(startPoint, endPoint));
+        line.setColor(panel.getPanelColor());
         panel.addObj(line);
         panel.repaint();
     }
@@ -85,6 +87,7 @@ class LineHandler implements DrawingModeHandler {
             panel.removeLastObj();
             endPoint = e.getPoint();
             Line line = new Line(new Line2D.Double(startPoint, endPoint));
+            line.setColor(panel.getPanelColor());
             panel.addObj(line);
             panel.repaint();
         }
@@ -95,6 +98,7 @@ class LineHandler implements DrawingModeHandler {
         isDrawingLine = false;
         endPoint = e.getPoint();
         Line line = new Line(new Line2D.Double(startPoint, endPoint));
+        line.setColor(panel.getPanelColor());
         panel.addObj(line);
         panel.repaint();
     }

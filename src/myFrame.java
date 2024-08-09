@@ -95,6 +95,21 @@ public class myFrame extends JFrame implements ActionListener {
             case "Clear":
                 drawPanel.clear();
                 break;
+            case "Red":
+                drawPanel.setPanelColor(Color.RED);
+                break;
+            case "Black":
+                drawPanel.setPanelColor(Color.BLACK);
+                break;
+            case "Yellow":
+                drawPanel.setPanelColor(Color.YELLOW);
+                break;
+            case "Green":
+                drawPanel.setPanelColor(Color.GREEN);
+                break;
+            case "Blue":
+                drawPanel.setPanelColor(Color.BLUE);
+                break;
             default:
                 // do nothing
                 break;
