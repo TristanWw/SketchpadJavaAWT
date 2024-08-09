@@ -10,6 +10,8 @@ enum DrawingMode {
     SCRIBBED,
     LINE,
     RECTANGLE,
+    GROUP,
+    UNGROUP,
     SELECT
 }
 
@@ -19,6 +21,16 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
     public DrawingMode mode = DrawingMode.SCRIBBED;
     private List<baseObj> baseObjs;
     private List<baseObj> selectedObjs;
+
+    public void groupSelectedObjs() {
+        groupBaseobjs g = new groupBaseobjs();
+        for (baseObj o : selectedObjs) {
+            baseObjs.remove(o);
+            g.addObj(o);
+        }
+        baseObjs.add(g);
+        selectedObjs.clear();
+    }
 
     public void resetBeforeSave() {
         // restore the default select mode

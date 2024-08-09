@@ -44,6 +44,15 @@ public class myFrame extends JFrame implements ActionListener {
         menu1.add(save);
         menu1.add(load);
 
+        JMenu menu2 = new JMenu("Operations");
+        // Group and Ungroup
+        JMenuItem group = new JMenuItem("Group");
+        JMenuItem ungroup = new JMenuItem("Ungroup");
+        group.addActionListener(this);
+        ungroup.addActionListener(this);
+        menu2.add(group);
+        menu2.add(ungroup);
+
         JMenu menu3 = new JMenu("Color");
         // Color subsection
         JMenuItem blackMenu = new JMenuItem("Black");
@@ -71,6 +80,7 @@ public class myFrame extends JFrame implements ActionListener {
         // seup the main meu
         setJMenuBar(mainMenuBar);
         mainMenuBar.add(menu1);
+        mainMenuBar.add(menu2);
         mainMenuBar.add(menu3);
         mainMenuBar.add(menu4);
     }
@@ -124,6 +134,12 @@ public class myFrame extends JFrame implements ActionListener {
             case "Load":
                 // Load from the file and substitute the object
                 loadFromFile();
+                break;
+            case "Group":
+                drawPanel.groupSelectedObjs();
+                break;
+            case "Ungroup":
+                // drawPanel.ungroupSelectedObjs();
                 break;
             default:
                 // do nothing
