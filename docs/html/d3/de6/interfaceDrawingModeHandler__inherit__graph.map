@@ -1,0 +1,12 @@
+<map id="DrawingModeHandler" name="DrawingModeHandler">
+<area shape="rect" id="node1" title=" " alt="" coords="5,208,168,235"/>
+<area shape="rect" id="node2" href="$d1/d78/classCircleHandler.html" title=" " alt="" coords="241,5,352,32"/>
+<area shape="rect" id="node3" href="$d0/d7e/classClosePolygonHandler.html" title=" " alt="" coords="216,56,377,83"/>
+<area shape="rect" id="node4" href="$d5/d53/classEclipseHandler.html" title=" " alt="" coords="237,107,356,133"/>
+<area shape="rect" id="node5" href="$d3/da9/classLineHandler.html" title=" " alt="" coords="247,157,347,184"/>
+<area shape="rect" id="node6" href="$d9/d77/classOpenPolygonHandler.html" title=" " alt="" coords="217,208,376,235"/>
+<area shape="rect" id="node7" href="$d0/dd0/classRectangleHandler.html" title=" " alt="" coords="227,259,366,285"/>
+<area shape="rect" id="node8" href="$df/dcc/classScribbleHandler.html" title=" " alt="" coords="234,309,359,336"/>
+<area shape="rect" id="node9" href="$df/d57/classSelectHandler.html" title=" " alt="" coords="240,360,353,387"/>
+<area shape="rect" id="node10" href="$d5/dde/classSquareHandler.html" title=" " alt="" coords="237,411,356,437"/>
+</map>

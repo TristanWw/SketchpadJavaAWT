@@ -1,0 +1,23 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" title=" " alt="" coords="37,411,136,437"/>
+<area shape="rect" id="node2" href="$dd/dcf/classbaseObj.html" title=" " alt="" coords="259,208,334,235"/>
+<area shape="rect" id="node12" href="$d1/d78/classCircleHandler.html" title=" " alt="" coords="241,259,352,285"/>
+<area shape="rect" id="node13" href="$d0/d7e/classClosePolygonHandler.html" title=" " alt="" coords="216,309,377,336"/>
+<area shape="rect" id="node14" href="$d5/d53/classEclipseHandler.html" title=" " alt="" coords="237,360,356,387"/>
+<area shape="rect" id="node15" href="$d3/da9/classLineHandler.html" title=" " alt="" coords="247,411,347,437"/>
+<area shape="rect" id="node16" href="$d9/d77/classOpenPolygonHandler.html" title=" " alt="" coords="217,461,376,488"/>
+<area shape="rect" id="node17" href="$d0/dd0/classRectangleHandler.html" title=" " alt="" coords="227,512,366,539"/>
+<area shape="rect" id="node18" href="$df/dcc/classScribbleHandler.html" title=" " alt="" coords="234,563,359,589"/>
+<area shape="rect" id="node19" href="$df/d57/classSelectHandler.html" title=" " alt="" coords="240,613,353,640"/>
+<area shape="rect" id="node20" href="$d5/dde/classSquareHandler.html" title=" " alt="" coords="237,664,356,691"/>
+<area shape="rect" id="node3" href="$d8/d53/classCircle.html" title=" " alt="" coords="455,5,514,32"/>
+<area shape="rect" id="node4" href="$d9/d33/classClosePolygon.html" title=" " alt="" coords="429,56,540,83"/>
+<area shape="rect" id="node5" href="$de/d6f/classEclipse.html" title=" " alt="" coords="451,107,519,133"/>
+<area shape="rect" id="node6" href="$db/d88/classgroupBaseobjs.html" title=" " alt="" coords="425,157,544,184"/>
+<area shape="rect" id="node7" href="$db/db6/classLine.html" title=" " alt="" coords="460,208,509,235"/>
+<area shape="rect" id="node8" href="$d0/dde/classOpenPolygon.html" title=" " alt="" coords="431,259,539,285"/>
+<area shape="rect" id="node9" href="$de/d00/classRectangle.html" title=" " alt="" coords="441,309,528,336"/>
+<area shape="rect" id="node10" href="$d4/d74/classScribbledLine.html" title=" " alt="" coords="430,360,539,387"/>
+<area shape="rect" id="node11" href="$d3/d72/classSquare.html" title=" " alt="" coords="451,411,518,437"/>
+<area shape="rect" id="node21" href="$db/d90/interfaceDrawingModeHandler.html" title=" " alt="" coords="5,461,168,488"/>
+</map>
