@@ -13,6 +13,59 @@ interface DrawingModeHandler {
     void myMouseClicked(MouseEvent e);
 }
 
+class SquareHandler implements DrawingModeHandler, Serializable {
+    private myPanel panel;
+    private Point startPoint;
+    private Square currentSquare;
+
+    public SquareHandler(myPanel panel) {
+        this.panel = panel;
+    }
+
+    @Override
+    public void myMouseClicked(MouseEvent e) {
+        // Do nothing for now
+    }
+
+    @Override
+    public void myMouseDragged(MouseEvent e) {
+        if (currentSquare != null) {
+            Point endPoint = e.getPoint();
+            panel.resetTempRenderList();
+            // Update the current square's size based on drag
+            currentSquare = new Square(startPoint, endPoint);
+            currentSquare.setColor(panel.getPanelColor());
+            panel.addTempRenderObj(currentSquare);
+            panel.repaint();
+        }
+    }
+
+    @Override
+    public void myMousePressed(MouseEvent e) {
+        // Start drawing a new square
+        startPoint = e.getPoint();
+        currentSquare = new Square(startPoint, startPoint); // Initially, it's a point
+        currentSquare.setColor(panel.getPanelColor());
+        panel.addTempRenderObj(currentSquare);
+        panel.repaint();
+    }
+
+    @Override
+    public void myMouseReleased(MouseEvent e) {
+        if (currentSquare != null) {
+            // Finalize the square on mouse release
+            Point endPoint = e.getPoint();
+            currentSquare = new Square(startPoint, endPoint);
+            currentSquare.setColor(panel.getPanelColor());
+            // Possibly add the finalized square to a list of shapes, if needed
+            panel.addObj(currentSquare);
+            panel.repaint();
+            currentSquare = null; // Reset the current square
+        }
+        panel.resetTempRenderList();
+    }
+}
+
 class RectangleHandler implements DrawingModeHandler, Serializable {
     private myPanel panel;
     private Point startPoint;
