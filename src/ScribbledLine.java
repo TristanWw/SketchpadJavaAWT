@@ -1,4 +1,8 @@
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,5 +77,27 @@ class ScribbledLine extends baseObj {
 
     void addPoints(Point p) {
         scribbledPoints.add(p);
+    }
+
+    @Override
+    void gradient(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        if (scribbledPoints.size() == 0)
+            return;
+
+        Point last = scribbledPoints.get(0);
+        for (int i = 1; i < scribbledPoints.size(); i++) {
+            Point current = scribbledPoints.get(i);
+
+            GradientPaint gradientPaint = new GradientPaint(
+                    last.x, last.y, Color.CYAN,
+                    current.x, current.y, Color.MAGENTA);
+
+            g2.setPaint(gradientPaint);
+            g2.setStroke(new BasicStroke(2));
+            g2.drawLine(last.x, last.y, current.x, current.y);
+
+            last = current;
+        }
     }
 }

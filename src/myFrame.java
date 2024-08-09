@@ -1,180 +1,103 @@
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 
-public class myFrame extends Frame {
-    private myCanvas canvas;
-    private Panel buttonPanel;
-    private Button straightLineButton;
-    private Button scribbledButton;
-    private Button selectModeButton;
-
-    private boolean isDrawingLine;
-    private Point startPoint, endPoint;
-    private boolean isDrawingScribbledLine;
-    private ScribbledLine sLine;
-    private boolean hasSelectedObj;
+public class myFrame extends JFrame implements ActionListener {
+    private myPanel drawPanel = new myPanel(Color.BLACK);
+    private JToolBar toolbar = new JToolBar();
 
     public myFrame() {
-        setSize(800, 600);
+        Container con = getContentPane();
+        con.setLayout(new BorderLayout());
 
-        // Create button panel
-        buttonPanel = new Panel();
-        buttonPanel.setPreferredSize(new Dimension(100, 600));
+        setupMenu();
+        setupToolbar();
 
-        // Create button
-        straightLineButton = new Button("Straight Line");
-        buttonPanel.add(straightLineButton);
-        scribbledButton = new Button("Scribbled Line");
-        buttonPanel.add(scribbledButton);
-        selectModeButton = new Button("Select Mode");
-        buttonPanel.add(selectModeButton);
+        con.add(toolbar, BorderLayout.NORTH);
+        con.add(drawPanel, BorderLayout.CENTER);
 
-        // Add button panel to the left side of the frame
-        add(buttonPanel, BorderLayout.WEST);
-
-        // Create canvas
-        canvas = new myCanvas();
-        add(canvas, BorderLayout.CENTER);
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                dispose(); // Close the frame
-            }
-        });
-
-        // Add action listeners to buttons
-        straightLineButton.addActionListener(new ButtonClickListener());
-        scribbledButton.addActionListener(new ButtonClickListener());
-        selectModeButton.addActionListener(new ButtonClickListener());
+        drawPanel.setPreferredSize(new Dimension(1200, 750));
     }
 
-    private class ButtonClickListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == straightLineButton) {
-                isDrawingLine = true; // Enable drawing straight lines
-                isDrawingScribbledLine = false;
-                for (MouseListener l : canvas.getMouseListeners()) {
-                    canvas.removeMouseListener(l);
-                }
-                // set up listeners
-                canvas.addMouseListener(new myStraightLineMouseHandler()); // Attach to canvas
-                canvas.addMouseMotionListener(new myStraightLineMouseMotionHandler()); // Attach to canvas
-            } else if (e.getSource() == scribbledButton) {
-                isDrawingLine = false; // Enable drawing scribbled lines
-                isDrawingScribbledLine = true;
-                for (MouseListener l : canvas.getMouseListeners()) {
-                    canvas.removeMouseListener(l);
-                }
-                // set up listeners
-                canvas.addMouseListener(new myScribbledLineMouseHandler()); // Attach to canvas
-                canvas.addMouseMotionListener(new myScribbledLineMouseMotionHandler()); // Attach to canvas
-            } else if (e.getSource() == selectModeButton) {
-                isDrawingLine = false; // Enable drawing scribbled lines
-                isDrawingScribbledLine = false;
-                for (MouseListener l : canvas.getMouseListeners()) {
-                    canvas.removeMouseListener(l);
-                }
-                // set up listeners
-                canvas.addMouseListener(new mySelectModeMouseHandler()); // Attach to canvas
-                canvas.addMouseMotionListener(new mySelectModeMouseMotionHandler()); // Attach to canvas
-            }
-        }
+    private void setupMenu() {
+        JMenuBar mainMenuBar = new JMenuBar();
+
+        JMenu menu1 = new JMenu("File");
+        // File subsection
+        JMenuItem clear = new JMenuItem("Clear");
+        JMenuItem exit = new JMenuItem("Exit");
+        JMenuItem save = new JMenuItem("Save");
+        JMenuItem load = new JMenuItem("Load");
+        clear.addActionListener(this);
+        exit.addActionListener(this);
+        save.addActionListener(this);
+        load.addActionListener(this);
+        menu1.add(clear);
+        menu1.add(exit);
+        menu1.add(save);
+        menu1.add(load);
+
+        JMenu menu3 = new JMenu("Color");
+        // Color subsection
+        JMenuItem blackMenu = new JMenuItem("Black");
+        JMenuItem greenMenu = new JMenuItem("Green");
+        JMenuItem yellowMenu = new JMenuItem("Yellow");
+        JMenuItem redMenu = new JMenuItem("Red");
+        JMenuItem blueMenu = new JMenuItem("Blue");
+        blackMenu.addActionListener(this);
+        greenMenu.addActionListener(this);
+        yellowMenu.addActionListener(this);
+        redMenu.addActionListener(this);
+        blueMenu.addActionListener(this);
+        menu3.add(blackMenu);
+        menu3.add(greenMenu);
+        menu3.add(yellowMenu);
+        menu3.add(redMenu);
+        menu3.add(blueMenu);
+
+        JMenu menu4 = new JMenu("Help");
+        // Help subsection
+        JMenuItem about = new JMenuItem("About");
+        about.addActionListener(this);
+        menu4.add(about);
+
+        // seup the main meu
+        setJMenuBar(mainMenuBar);
+        mainMenuBar.add(menu1);
+        mainMenuBar.add(menu3);
+        mainMenuBar.add(menu4);
     }
 
-    public class myStraightLineMouseHandler extends MouseAdapter {
-        @Override
-        public void mousePressed(MouseEvent e) {
-            isDrawingLine = true;
-            startPoint = e.getPoint();
-        }
+    private void setupToolbar() {
+        JButton scribbledButton = new JButton("ScribbledLine");
+        scribbledButton.addActionListener(e -> drawPanel.setMode(DrawingMode.SCRIBBED));
+        toolbar.add(scribbledButton);
 
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            isDrawingLine = false;
-            endPoint = e.getPoint();
-            Line line = new Line(startPoint, endPoint);
-            canvas.addObj(line);
-            canvas.repaint();
-        }
+        JButton lineButton = new JButton("Line");
+        lineButton.addActionListener(e -> drawPanel.setMode(DrawingMode.LINE));
+        toolbar.add(lineButton);
+
+        JButton selectButton = new JButton("Select");
+        selectButton.addActionListener(e -> drawPanel.setMode(DrawingMode.SELECT));
+        toolbar.add(selectButton);
     }
 
-    public class myStraightLineMouseMotionHandler extends MouseMotionAdapter {
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            if (isDrawingLine) {
-                endPoint = e.getPoint();
-                Line dashLine = new Line(startPoint, endPoint);
-                dashLine.draw(getGraphics());
-                canvas.repaint();
-            }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String arg = e.getActionCommand();
+        switch (arg) {
+            case "Exit":
+                System.exit(0);
+                break;
+            case "About":
+                JOptionPane.showMessageDialog(null, "Sketchpad Program");
+                break;
+            case "Clear":
+                drawPanel.clear();
+                break;
+            default:
+                // do nothing
+                break;
         }
-    }
-
-    public class myScribbledLineMouseHandler extends MouseAdapter {
-        @Override
-        public void mousePressed(MouseEvent e) {
-            isDrawingScribbledLine = true;
-            sLine = new ScribbledLine();
-            sLine.addPoints(e.getPoint());
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            isDrawingScribbledLine = false;
-            sLine.addPoints(e.getPoint());
-            canvas.addObj(sLine);
-            canvas.repaint();
-        }
-    }
-
-    public class myScribbledLineMouseMotionHandler extends MouseMotionAdapter {
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            if (isDrawingScribbledLine) {
-                sLine.addPoints(e.getPoint());
-                canvas.repaint();
-            }
-        }
-    }
-
-    public class mySelectModeMouseHandler extends MouseAdapter {
-        @Override
-        public void mousePressed(MouseEvent e) {
-            if (canvas.select(e.getPoint())) {
-                hasSelectedObj = true;
-                startPoint = e.getPoint();
-            }
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            hasSelectedObj = false;
-            endPoint = e.getPoint();
-            // calculate the dx dy
-            baseObj o = canvas.getSelectedObj();
-            if (o != null)
-                o.translate(endPoint.x - startPoint.x, endPoint.y - startPoint.y);
-            canvas.repaint();
-        }
-    }
-
-    public class mySelectModeMouseMotionHandler extends MouseMotionAdapter {
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            if (hasSelectedObj) {
-                endPoint = e.getPoint();
-                // calculate the dx dy
-                // baseObj o = canvas.getSelectedObj();
-                // if (o != null)
-                // o.translate(endPoint.x - startPoint.x, endPoint.y - startPoint.y);
-                canvas.repaint();
-            }
-        }
-    }
-
-    public static void main(String[] args) {
-        new myFrame().setVisible(true);
     }
 }

@@ -1,4 +1,8 @@
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 
 class Line extends baseObj {
@@ -12,6 +16,9 @@ class Line extends baseObj {
 
     @Override
     void translate(int dx, int dy) {
+        System.out.println("dx:" + dx + " dy:" + dy);
+        System.out.println("start.x:" + start.x + " start.y:" + start.y);
+        System.out.println("end.x:" + end.x + " end.y:" + end.y);
         this.start.x += dx;
         this.start.y += dy;
         this.end.x += dx;
@@ -59,5 +66,16 @@ class Line extends baseObj {
 
         // Check if the area is very close to zero
         return distance < epsilon;
+    }
+
+    @Override
+    void gradient(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        GradientPaint gradientPaint = new GradientPaint(
+                start.x, start.y, Color.CYAN,
+                end.x, end.y, Color.MAGENTA);
+        g2.setPaint(gradientPaint);
+        g2.setStroke(new BasicStroke(2));
+        g.drawLine(start.x, start.y, end.x, end.y);
     }
 }

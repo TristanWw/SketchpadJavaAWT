@@ -4,22 +4,24 @@ import java.awt.Color;
 import java.io.Serializable;
 
 abstract class baseObj implements Serializable {
-	private static final long serialVersionUID = 1L; // for verification
-	private Color color;
+    private static final long serialVersionUID = 1L; // for verification
+    private Color color;
 
-	public Color getColor() {
-		return color;
-	}
+    public Color getColor() {
+        return color;
+    }
 
-	public void setColor(Color c) {
-		this.color = c;
-	}
+    public void setColor(Color c) {
+        this.color = c;
+    }
 
-	abstract void translate(int dx, int dy);
+    abstract void translate(int dx, int dy);
 
-	abstract void draw(Graphics g);
+    abstract void draw(Graphics g);
 
-	abstract boolean contains(Point p);
+    abstract boolean contains(Point p);
 
-	abstract baseObj copy();
+    abstract void gradient(Graphics g);
+
+    abstract baseObj copy();
 }
