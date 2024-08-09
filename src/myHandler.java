@@ -13,6 +13,60 @@ interface DrawingModeHandler {
     void myMouseClicked(MouseEvent e);
 }
 
+class RectangleHandler implements DrawingModeHandler, Serializable {
+    private myPanel panel;
+    private Point startPoint;
+    private Rectangle currentRectangle;
+
+    public RectangleHandler(myPanel panel) {
+        this.panel = panel;
+    }
+
+    @Override
+    public void myMouseClicked(MouseEvent e) {
+        // Do nothing for now
+    }
+
+    @Override
+    public void myMouseDragged(MouseEvent e) {
+        if (currentRectangle != null) {
+            Point endPoint = e.getPoint();
+            panel.resetTempRenderList();
+            // Update the current rectangle's size based on drag
+            currentRectangle = new Rectangle(startPoint, endPoint);
+            currentRectangle.setColor(panel.getPanelColor());
+            panel.addTempRenderObj(currentRectangle);
+            panel.repaint();
+        }
+    }
+
+    @Override
+    public void myMousePressed(MouseEvent e) {
+        // Start drawing a new rectangle
+        startPoint = e.getPoint();
+        currentRectangle = new Rectangle(startPoint, startPoint); // Initially, it's a point
+        currentRectangle.setColor(panel.getPanelColor());
+        panel.addTempRenderObj(currentRectangle);
+        panel.repaint();
+    }
+
+    @Override
+    public void myMouseReleased(MouseEvent e) {
+        if (currentRectangle != null) {
+            // Finalize the rectangle on mouse release
+            Point endPoint = e.getPoint();
+            currentRectangle = new Rectangle(startPoint, endPoint);
+            currentRectangle.setColor(panel.getPanelColor());
+            // Possibly add the finalized rectangle to a list of shapes, if needed
+            panel.addObj(currentRectangle);
+            panel.repaint();
+            currentRectangle = null; // Reset the current rectangle
+        }
+        panel.resetTempRenderList();
+    }
+
+}
+
 class ScribbleHandler implements DrawingModeHandler, Serializable {
     private myPanel panel;
     private boolean isDrawingScribbledLine;

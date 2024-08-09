@@ -11,8 +11,6 @@ enum DrawingMode {
     SCRIBBED,
     LINE,
     RECTANGLE,
-    GROUP,
-    UNGROUP,
     SELECT
 }
 
@@ -94,6 +92,7 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         System.out.println("copyObjs.size:" + copyObjs.size());
         System.out.println("undoStack.size:" + undoStack.size());
         System.out.println("redoStack.size:" + redoStack.size());
+        System.out.println("Color:" + myColor);
         System.out.println("++++++++++++++++");
         for (Action a : redoStack) {
             System.out.print(
@@ -233,11 +232,10 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
                 selectedObjs.clear();
                 modeHandler = new LineHandler(this);
                 break;
-            /**
-             * case RECTANGLE:
-             * modeHandler = new RectangleHandler(this);
-             * break;
-             **/
+            case RECTANGLE:
+                selectedObjs.clear();
+                modeHandler = new RectangleHandler(this);
+                break;
             case SELECT:
                 modeHandler = new SelectHandler(this);
                 break;
