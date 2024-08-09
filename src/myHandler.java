@@ -1,4 +1,5 @@
 import java.awt.event.MouseEvent;
+import java.awt.geom.Line2D;
 import java.awt.Point;
 
 interface DrawingModeHandler {
@@ -71,26 +72,29 @@ class LineHandler implements DrawingModeHandler {
     public void myMousePressed(MouseEvent e) {
         isDrawingLine = true;
         startPoint = e.getPoint();
+        endPoint = e.getPoint();
         // first add a line for drag update
-        Line line = new Line(startPoint, startPoint);
+        Line line = new Line(new Line2D.Double(startPoint, endPoint));
         panel.addObj(line);
         panel.repaint();
     }
 
     @Override
     public void myMouseDragged(MouseEvent e) {
-        panel.removeLastObj();
-        endPoint = e.getPoint();
-        Line line = new Line(startPoint, endPoint);
-        panel.addObj(line);
-        panel.repaint();
+        if (isDrawingLine) {
+            panel.removeLastObj();
+            endPoint = e.getPoint();
+            Line line = new Line(new Line2D.Double(startPoint, endPoint));
+            panel.addObj(line);
+            panel.repaint();
+        }
     }
 
     @Override
     public void myMouseReleased(MouseEvent e) {
         isDrawingLine = false;
         endPoint = e.getPoint();
-        Line line = new Line(startPoint, endPoint);
+        Line line = new Line(new Line2D.Double(startPoint, endPoint));
         panel.addObj(line);
         panel.repaint();
     }
@@ -102,7 +106,7 @@ class LineHandler implements DrawingModeHandler {
 
 class SelectHandler implements DrawingModeHandler {
     private myPanel panel;
-    private Point startPoint, endPoint;
+    private Point startPoint;
 
     public SelectHandler(myPanel panel) {
         this.panel = panel;

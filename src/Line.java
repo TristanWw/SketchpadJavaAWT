@@ -4,35 +4,38 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.geom.Line2D;
 
 class Line extends baseObj {
-    private Point start;
-    private Point end;
+    private Line2D line;
 
-    Line(Point start, Point end) {
-        this.start = start;
-        this.end = end;
+    Line(Line2D l) {
+        line = l;
     }
 
     @Override
-    void translate(int dx, int dy) {
-        System.out.println("dx:" + dx + " dy:" + dy);
-        System.out.println("start.x:" + start.x + " start.y:" + start.y);
-        System.out.println("end.x:" + end.x + " end.y:" + end.y);
-        this.start.x += dx;
-        this.start.y += dy;
-        this.end.x += dx;
-        this.end.y += dy;
+    void translate(double dx, double dy) {
+        line = new Line2D.Double(
+                line.getX1() + dx,
+                line.getY1() + dy,
+                line.getX2() + dx,
+                line.getY2() + dy);
+
     }
 
     baseObj copy() {
         // serialize the object and save to clip board
-        return new Line(new Point(), new Point());
+        Line2D temp = new Line2D.Double(new Point(), new Point());
+        return new Line(temp);
     }
 
     @Override
     void draw(Graphics g) {
-        g.drawLine(start.x, start.y, end.x, end.y);
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setColor(getColor());
+        g2.draw(line);
+        g2.fill(line);
     }
 
     public double calPerpendicularDistance(Point start, Point end, Point p) {
@@ -58,24 +61,21 @@ class Line extends baseObj {
 
     @Override
     boolean contains(Point p) {
-        // calculate the perpendicular distance
-        double distance = calPerpendicularDistance(start, end, p);
-
         // Define a small epsilon for floating point comparison
         double epsilon = 5.0;
 
         // Check if the area is very close to zero
-        return distance < epsilon;
+        return line.ptSegDist(p) <= epsilon;
     }
 
     @Override
     void gradient(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        GradientPaint gradientPaint = new GradientPaint(
-                start.x, start.y, Color.CYAN,
-                end.x, end.y, Color.MAGENTA);
+        Rectangle bounds = line.getBounds();
+        GradientPaint gradientPaint = new GradientPaint(bounds.x, bounds.y, Color.CYAN, bounds.x + bounds.width,
+                bounds.y + bounds.height, Color.MAGENTA);
         g2.setPaint(gradientPaint);
         g2.setStroke(new BasicStroke(2));
-        g.drawLine(start.x, start.y, end.x, end.y);
+        g2.draw(line);
     }
 }

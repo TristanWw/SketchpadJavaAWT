@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.geom.Line2D;
 
 class ScribbledLine extends baseObj {
     private List<Point> scribbledPoints;
@@ -15,7 +16,7 @@ class ScribbledLine extends baseObj {
     }
 
     @Override
-    void translate(int dx, int dy) {
+    void translate(double dx, double dy) {
         for (Point p : scribbledPoints) {
             p.x += dx;
             p.y += dy;
@@ -30,9 +31,13 @@ class ScribbledLine extends baseObj {
 
     @Override
     void draw(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setColor(getColor());
         Point last = scribbledPoints.get(0);
         for (int i = 1; i < scribbledPoints.size(); i++) {
-            g.drawLine(last.x, last.y, scribbledPoints.get(i).x, scribbledPoints.get(i).y);
+            Line2D line = new Line2D.Double(last, scribbledPoints.get(i));
+            g2.draw(line);
+            g2.fill(line);
             last = scribbledPoints.get(i);
         }
     }
@@ -95,8 +100,8 @@ class ScribbledLine extends baseObj {
 
             g2.setPaint(gradientPaint);
             g2.setStroke(new BasicStroke(2));
-            g2.drawLine(last.x, last.y, current.x, current.y);
-
+            Line2D line = new Line2D.Double(last, scribbledPoints.get(i));
+            g2.draw(line);
             last = current;
         }
     }

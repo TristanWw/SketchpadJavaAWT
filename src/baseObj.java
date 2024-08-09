@@ -15,7 +15,7 @@ abstract class baseObj implements Serializable {
         this.color = c;
     }
 
-    abstract void translate(int dx, int dy);
+    abstract void translate(double dx, double dy);
 
     abstract void draw(Graphics g);
 
