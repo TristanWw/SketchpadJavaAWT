@@ -48,10 +48,13 @@ public class myFrame extends JFrame implements ActionListener {
         // Group and Ungroup
         JMenuItem group = new JMenuItem("Group");
         JMenuItem ungroup = new JMenuItem("Ungroup");
+        JMenuItem cut = new JMenuItem("Cut");
         group.addActionListener(this);
         ungroup.addActionListener(this);
+        cut.addActionListener(this);
         menu2.add(group);
         menu2.add(ungroup);
+        menu2.add(cut);
 
         JMenu menu3 = new JMenu("Color");
         // Color subsection
@@ -144,6 +147,9 @@ public class myFrame extends JFrame implements ActionListener {
                 break;
             case "Ungroup":
                 drawPanel.ungroupSelectedObjs();
+                break;
+            case "Cut":
+                drawPanel.cut();
                 break;
             case "Debug":
                 drawPanel.debug();

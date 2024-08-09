@@ -23,6 +23,19 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
     private List<baseObj> selectedObjs;
     private List<baseObj> tempRenderObjs;
 
+    public void cut() {
+        // delte the selected objects
+        for (int i = 0; i < selectedObjs.size(); i++) {
+            baseObj o = selectedObjs.get(i);
+            if (baseObjs.contains(o)) {
+                // remove from baseObjs
+                baseObjs.remove(o);
+            }
+        }
+        selectedObjs.clear();
+        repaint();
+    }
+
     public void debug() {
         System.out.println("selectedObjs.size:" + selectedObjs.size());
         for (baseObj o : selectedObjs) {
