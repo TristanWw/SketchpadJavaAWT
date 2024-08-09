@@ -23,6 +23,15 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
     private List<baseObj> selectedObjs;
     private List<baseObj> tempRenderObjs;
 
+    public void debug() {
+        System.out.println("selectedObjs.size:" + selectedObjs.size());
+        for (baseObj o : selectedObjs) {
+            System.out.println(o);
+        }
+        System.out.println("baseObjs.size:" + baseObjs.size());
+        System.out.println("tempRenderObjs.size:" + tempRenderObjs.size());
+    }
+
     public void addTempRenderObj(baseObj o) {
         tempRenderObjs.add(o);
     }

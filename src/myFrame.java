@@ -72,10 +72,14 @@ public class myFrame extends JFrame implements ActionListener {
         menu3.add(blueMenu);
 
         JMenu menu4 = new JMenu("Help");
+        // Debug function
+        JMenuItem debug = new JMenuItem("Debug");
         // Help subsection
         JMenuItem about = new JMenuItem("About");
         about.addActionListener(this);
+        debug.addActionListener(this);
         menu4.add(about);
+        menu4.add(debug);
 
         // seup the main meu
         setJMenuBar(mainMenuBar);
@@ -140,6 +144,9 @@ public class myFrame extends JFrame implements ActionListener {
                 break;
             case "Ungroup":
                 drawPanel.ungroupSelectedObjs();
+                break;
+            case "Debug":
+                drawPanel.debug();
                 break;
             default:
                 // do nothing
