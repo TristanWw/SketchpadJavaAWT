@@ -15,9 +15,12 @@ class groupBaseobjs extends baseObj {
 
     @Override
     void translate(double dx, double dy) {
-        for (baseObj o : groupObjs) {
-            o.translate(dx, dy);
-        }
+        /**
+         * for (baseObj o : groupObjs) {
+         * o.translate(dx, dy);
+         * }
+         **/
+        bounds.translate((int) dx, (int) dy);
     }
 
     @Override
@@ -27,29 +30,32 @@ class groupBaseobjs extends baseObj {
     }
 
     @Override
-    void draw(Graphics g) {
+    void draw(Graphics g, int offsetX, int offsetY) {
         for (baseObj o : groupObjs) {
-            o.draw(g);
+            // o.draw(g);
+            o.draw(g, bounds.x + offsetX, bounds.y + offsetY);
         }
     }
 
     @Override
-    boolean contains(Point p) {
+    boolean contains(Point p, int offsetX, int offsetY) {
         for (baseObj o : groupObjs) {
-            if (o.contains(p))
+            if (o.contains(new Point(p.x - bounds.x - offsetX, p.y - bounds.y - offsetY), 0, 0))
                 return true;
         }
         return false;
     }
 
     void addObj(baseObj o) {
-        groupObjs.add(o);
+        groupObjs.add(o); // add copy to the array not the reference
+        updateBounds();
     }
 
     @Override
-    void gradient(Graphics g) {
+    void gradient(Graphics g, int offsetX, int offsetY) {
         for (baseObj o : groupObjs) {
-            o.gradient(g);
+            // o.gradient(g);
+            o.gradient(g, bounds.x + offsetX, bounds.y + offsetY);
         }
     }
 
@@ -68,5 +74,14 @@ class groupBaseobjs extends baseObj {
         }
 
         bounds.setBounds(minX, minY, maxX - minX, maxY - minY);
+    }
+
+    @Override
+    Rectangle getBounds() {
+        return bounds;
+    }
+
+    List<baseObj> getGroupObjs() {
+        return groupObjs;
     }
 }

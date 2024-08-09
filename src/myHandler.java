@@ -1,6 +1,5 @@
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
-import java.util.List;
 import java.awt.Point;
 import java.io.Serializable;
 
@@ -31,16 +30,16 @@ class ScribbleHandler implements DrawingModeHandler, Serializable {
         sLine.addPoints(e.getPoint());
         // first add a line for drag update
         sLine.addPoints(e.getPoint()); // sLine need at least two points
-        panel.addObj(sLine);
+        panel.addTempRenderObj(sLine);
         panel.repaint();
     }
 
     @Override
     public void myMouseDragged(MouseEvent e) {
         if (isDrawingScribbledLine) {
-            panel.removeLastObj();
+            panel.resetTempRenderList();
             sLine.addPoints(e.getPoint());
-            panel.addObj(sLine);
+            panel.addTempRenderObj(sLine);
             panel.repaint();
         }
     }
@@ -55,6 +54,7 @@ class ScribbleHandler implements DrawingModeHandler, Serializable {
             panel.repaint();
         }
         sLine = null;
+        panel.resetTempRenderList();
     }
 
     @Override
@@ -79,18 +79,18 @@ class LineHandler implements DrawingModeHandler, Serializable {
         // first add a line for drag update
         Line line = new Line(new Line2D.Double(startPoint, endPoint));
         line.setColor(panel.getPanelColor());
-        panel.addObj(line);
+        panel.addTempRenderObj(line);
         panel.repaint();
     }
 
     @Override
     public void myMouseDragged(MouseEvent e) {
         if (isDrawingLine) {
-            panel.removeLastObj();
+            panel.resetTempRenderList();
             endPoint = e.getPoint();
             Line line = new Line(new Line2D.Double(startPoint, endPoint));
             line.setColor(panel.getPanelColor());
-            panel.addObj(line);
+            panel.addTempRenderObj(line);
             panel.repaint();
         }
     }
@@ -103,6 +103,7 @@ class LineHandler implements DrawingModeHandler, Serializable {
         line.setColor(panel.getPanelColor());
         panel.addObj(line);
         panel.repaint();
+        panel.resetTempRenderList();
     }
 
     @Override
@@ -124,7 +125,7 @@ class SelectHandler implements DrawingModeHandler, Serializable {
         startPoint = e.getPoint();
         // judge the current point
         for (baseObj o : panel.getBaseObjs()) {
-            if (o.contains(startPoint)) {
+            if (o.contains(startPoint, 0, 0)) {
                 if (!panel.getSelectedObjs().contains(o)) {
                     // add to the list if not in it
                     panel.addSelect(o);
@@ -157,7 +158,7 @@ class SelectHandler implements DrawingModeHandler, Serializable {
         Point p = e.getPoint();
         // judge the current point
         for (baseObj o : panel.getBaseObjs()) {
-            if (o.contains(p)) {
+            if (o.contains(p, 0, 0)) {
                 blankSpot = false;
                 if (panel.getSelectedObjs().contains(o)) {
                     // remove if already in the list
@@ -171,6 +172,7 @@ class SelectHandler implements DrawingModeHandler, Serializable {
         if (blankSpot) {
             panel.getSelectedObjs().clear();
         }
+        panel.resetTempRenderList();
         panel.repaint();
     }
 

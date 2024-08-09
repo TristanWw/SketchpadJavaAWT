@@ -139,7 +139,7 @@ public class myFrame extends JFrame implements ActionListener {
                 drawPanel.groupSelectedObjs();
                 break;
             case "Ungroup":
-                // drawPanel.ungroupSelectedObjs();
+                drawPanel.ungroupSelectedObjs();
                 break;
             default:
                 // do nothing

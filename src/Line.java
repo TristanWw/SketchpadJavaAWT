@@ -26,16 +26,17 @@ class Line extends baseObj {
 
     baseObj copy() {
         // serialize the object and save to clip board
-        Line2D temp = new Line2D.Double(new Point(), new Point());
-        return new Line(temp);
+        return new Line(new Line2D.Double(line.getX1(), line.getY1(), line.getX2(), line.getY2()));
     }
 
     @Override
-    void draw(Graphics g) {
+    void draw(Graphics g, int offsetX, int offsetY) {
         Graphics2D g2 = (Graphics2D) g;
         g2.setColor(getColor());
+        g2.translate(offsetX, offsetY);
         g2.draw(line);
         g2.fill(line);
+        g2.translate(-offsetX, -offsetY);
     }
 
     public double calPerpendicularDistance(Point start, Point end, Point p) {
@@ -60,22 +61,29 @@ class Line extends baseObj {
     }
 
     @Override
-    boolean contains(Point p) {
+    boolean contains(Point p, int offsetX, int offsetY) {
         // Define a small epsilon for floating point comparison
         double epsilon = 5.0;
 
         // Check if the area is very close to zero
-        return line.ptSegDist(p) <= epsilon;
+        return line.ptSegDist(new Point(p.x - offsetX, p.y - offsetY)) <= epsilon;
     }
 
     @Override
-    void gradient(Graphics g) {
+    void gradient(Graphics g, int offsetX, int offsetY) {
         Graphics2D g2 = (Graphics2D) g;
         Rectangle bounds = line.getBounds();
         GradientPaint gradientPaint = new GradientPaint(bounds.x, bounds.y, Color.CYAN, bounds.x + bounds.width,
                 bounds.y + bounds.height, Color.MAGENTA);
         g2.setPaint(gradientPaint);
         g2.setStroke(new BasicStroke(2));
+        g2.translate(offsetX, offsetY);
         g2.draw(line);
+        g2.translate(-offsetX, -offsetY);
+    }
+
+    @Override
+    Rectangle getBounds() {
+        return line.getBounds();
     }
 }

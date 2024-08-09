@@ -21,15 +21,53 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
     public DrawingMode mode = DrawingMode.SCRIBBED;
     private List<baseObj> baseObjs;
     private List<baseObj> selectedObjs;
+    private List<baseObj> tempRenderObjs;
+
+    public void addTempRenderObj(baseObj o) {
+        tempRenderObjs.add(o);
+    }
+
+    public void resetTempRenderList() {
+        tempRenderObjs.clear();
+    }
 
     public void groupSelectedObjs() {
+        // put selected objects into one object and then put into the array
         groupBaseobjs g = new groupBaseobjs();
-        for (baseObj o : selectedObjs) {
+        for (int i = 0; i < selectedObjs.size(); i++) {
+            baseObj o = selectedObjs.get(i);
             baseObjs.remove(o);
             g.addObj(o);
         }
         baseObjs.add(g);
         selectedObjs.clear();
+
+        // System.out.println("selectedObjs.size:" + selectedObjs.size());
+        // System.out.println("baseObjs.size:" + baseObjs.size());
+        setMode(DrawingMode.SELECT);
+        repaint();
+    }
+
+    public void ungroupSelectedObjs() {
+        // ungroup the selected groupBaseobjs object and rejoin the array
+        for (int i = 0; i < selectedObjs.size(); i++) {
+            if (selectedObjs.get(i) instanceof groupBaseobjs) {
+                baseObj sObj = selectedObjs.get(i);
+                // remove the selected from baseObjs
+                baseObjs.remove(sObj);
+                // break the objects and rejoin the array
+                groupBaseobjs go = (groupBaseobjs) sObj;
+                List<baseObj> groupObjs = go.getGroupObjs();
+                for (baseObj o : groupObjs) {
+                    baseObjs.add(o);
+                }
+            }
+        }
+        selectedObjs.clear();
+        // System.out.println("selectedObjs.size:" + selectedObjs.size());
+        // System.out.println("baseObjs.size:" + baseObjs.size());
+        setMode(DrawingMode.SELECT);
+        repaint();
     }
 
     public void resetBeforeSave() {
@@ -51,6 +89,7 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         myColor = Color.BLACK;
         this.baseObjs = new ArrayList<baseObj>();
         this.selectedObjs = new ArrayList<baseObj>();
+        this.tempRenderObjs = new ArrayList<baseObj>();
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
     }
@@ -59,6 +98,7 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         myColor = color;
         this.baseObjs = new ArrayList<baseObj>();
         this.selectedObjs = new ArrayList<baseObj>();
+        this.tempRenderObjs = new ArrayList<baseObj>();
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
     }
@@ -67,6 +107,7 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         myColor = Color.BLACK;
         baseObjs.clear();
         selectedObjs.clear();
+        tempRenderObjs.clear();
         repaint();
     }
 
@@ -116,13 +157,6 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         return baseObjs.get(baseObjs.size() - 1);
     }
 
-    void removeLastObj() {
-        if (baseObjs.size() != 0) {
-            System.out.println("remove the last obj from baseObjs array");
-            baseObjs.remove(baseObjs.size() - 1);
-        }
-    }
-
     List<baseObj> getBaseObjs() {
         return baseObjs;
     }
@@ -136,11 +170,15 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         super.paintComponent(g);
         // draw the objs
         for (baseObj o : baseObjs) {
-            o.draw(g);
+            o.draw(g, 0, 0);
         }
         // draw the select highlight surroundings
         for (baseObj o : selectedObjs) {
-            o.gradient(g);
+            o.gradient(g, 0, 0);
+        }
+        // render the drawing process
+        for (baseObj o : tempRenderObjs) {
+            o.draw(g, 0, 0);
         }
     }
 
