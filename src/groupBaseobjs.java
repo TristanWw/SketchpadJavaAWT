@@ -25,8 +25,16 @@ class groupBaseobjs extends baseObj {
 
     @Override
     baseObj copy() {
-        // wait for implementation
-        return new groupBaseobjs();
+        groupBaseobjs copyGroup = new groupBaseobjs();
+
+        for (baseObj o : this.groupObjs) {
+            copyGroup.addObj(o.copy());
+        }
+
+        // Copy the bounds to the new group
+        copyGroup.bounds = new Rectangle(this.bounds);
+
+        return copyGroup;
     }
 
     @Override
