@@ -1,7 +1,9 @@
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
+import java.util.List;
 import java.awt.Point;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 interface DrawingModeHandler {
     void myMousePressed(MouseEvent e);
@@ -11,6 +13,63 @@ interface DrawingModeHandler {
     void myMouseReleased(MouseEvent e);
 
     void myMouseClicked(MouseEvent e);
+}
+
+class ClosePolygonHandler implements DrawingModeHandler, Serializable {
+    private myPanel panel;
+    private boolean isDrawingPolygon;
+    private List<Point> points;
+    private ClosePolygon tempPolygon;
+
+    public ClosePolygonHandler(myPanel panel) {
+        this.panel = panel;
+        this.points = new ArrayList<>();
+    }
+
+    @Override
+    public void myMousePressed(MouseEvent e) {
+        if (!isDrawingPolygon) {
+            isDrawingPolygon = true;
+            points.clear(); // Start a new polygon
+        }
+
+        points.add(e.getPoint()); // Add point on each click
+        tempPolygon = new ClosePolygon(points);
+        tempPolygon.setColor(panel.getPanelColor());
+        panel.resetTempRenderList();
+        panel.addTempRenderObj(tempPolygon);
+        panel.repaint();
+
+        if (e.getButton() == MouseEvent.BUTTON3) { // Right-click
+            finalizePolygon();
+        }
+    }
+
+    private void finalizePolygon() {
+        if (isDrawingPolygon) {
+            ClosePolygon polygon = new ClosePolygon(new ArrayList<>(points));
+            polygon.setColor(panel.getPanelColor());
+            panel.addObj(polygon);
+            panel.repaint();
+            panel.resetTempRenderList();
+            isDrawingPolygon = false; // End drawing mode
+        }
+    }
+
+    @Override
+    public void myMouseDragged(MouseEvent e) {
+        // Optionally handle dragging if needed (e.g., for moving points)
+    }
+
+    @Override
+    public void myMouseReleased(MouseEvent e) {
+        // Optional: Additional logic for mouse release if needed
+    }
+
+    @Override
+    public void myMouseClicked(MouseEvent e) {
+        // Optionally handle clicks for specific logic if needed
+    }
 }
 
 class CircleHandler implements DrawingModeHandler, Serializable {
