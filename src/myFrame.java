@@ -1,5 +1,12 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import javax.swing.*;
 
 public class myFrame extends JFrame implements ActionListener {
@@ -110,9 +117,79 @@ public class myFrame extends JFrame implements ActionListener {
             case "Blue":
                 drawPanel.setPanelColor(Color.BLUE);
                 break;
+            case "Save":
+                // Serialize the object and save to a file
+                saveToFile();
+                break;
+            case "Load":
+                // Load from the file and substitute the object
+                loadFromFile();
+                break;
             default:
                 // do nothing
                 break;
+        }
+    }
+
+    private void saveToFile() {
+        // Create a file chooser
+        JFileChooser fileChooser = new JFileChooser();
+
+        // Show the save dialog
+        int option = fileChooser.showSaveDialog(this);
+
+        if (option == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            try (FileOutputStream fileOut = new FileOutputStream(file);
+                    ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+                drawPanel.resetBeforeSave();
+                out.writeObject(drawPanel);
+                System.out.println("File saved: " + file.getAbsolutePath());
+            } catch (IOException i) {
+                i.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error saving file: " + i.getMessage(), "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            System.out.println("Save command cancelled by user.");
+        }
+    }
+
+    private void loadFromFile() {
+        // Create a file chooser
+        JFileChooser fileChooser = new JFileChooser();
+
+        // Show the open dialog
+        int option = fileChooser.showOpenDialog(this);
+
+        if (option == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            try (FileInputStream fileIn = new FileInputStream(file);
+                    ObjectInputStream in = new ObjectInputStream(fileIn)) {
+                // Deserialize the new DrawingPanel
+                myPanel newDrawPanel = (myPanel) in.readObject();
+
+                // Remove the old DrawingPanel
+                Container con = getContentPane();
+                con.remove(drawPanel);
+
+                // Set the new DrawingPanel
+                drawPanel = newDrawPanel;
+
+                // Add the new DrawingPanel to the frame
+                con.add(drawPanel, BorderLayout.CENTER);
+
+                // Revalidate and repaint to update the frame
+                con.revalidate();
+                con.repaint();
+                System.out.println("File loaded: " + file.getAbsolutePath());
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error loading file: " + e.getMessage(), "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            System.out.println("Load command cancelled by user.");
         }
     }
 }

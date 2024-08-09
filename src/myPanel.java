@@ -20,6 +20,13 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
     private List<baseObj> baseObjs;
     private List<baseObj> selectedObjs;
 
+    public void resetBeforeSave() {
+        // restore the default select mode
+        modeHandler = new SelectHandler(this);
+        // clear the selectedObjs array
+        selectedObjs.clear();
+    }
+
     public void setPanelColor(Color color) {
         myColor = color;
     }

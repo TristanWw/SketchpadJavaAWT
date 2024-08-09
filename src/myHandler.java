@@ -1,6 +1,7 @@
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
 import java.awt.Point;
+import java.io.Serializable;
 
 interface DrawingModeHandler {
     void myMousePressed(MouseEvent e);
@@ -12,7 +13,7 @@ interface DrawingModeHandler {
     void myMouseClicked(MouseEvent e);
 }
 
-class ScribbleHandler implements DrawingModeHandler {
+class ScribbleHandler implements DrawingModeHandler, Serializable {
     private myPanel panel;
     private boolean isDrawingScribbledLine;
     private ScribbledLine sLine;
@@ -60,7 +61,7 @@ class ScribbleHandler implements DrawingModeHandler {
     }
 }
 
-class LineHandler implements DrawingModeHandler {
+class LineHandler implements DrawingModeHandler, Serializable {
     private myPanel panel;
     private boolean isDrawingLine;
     private Point startPoint, endPoint;
@@ -108,7 +109,7 @@ class LineHandler implements DrawingModeHandler {
     }
 }
 
-class SelectHandler implements DrawingModeHandler {
+class SelectHandler implements DrawingModeHandler, Serializable {
     private myPanel panel;
     private Point startPoint;
 
