@@ -180,12 +180,13 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
     }
     
     void drawCurrentShape(Point startPoint,Point endPoint,String status){
+        CustomShape temp = null;
         switch (mode) {
             case LINE:
-                currentShape = new CustomShape(new Line2D.Double(startPoint, endPoint), shapeColor);
+                temp = new CustomShape(new Line2D.Double(startPoint, endPoint), shapeColor);
                 break;
             case RECTANGLE:
-                currentShape = new CustomShape(new Rectangle2D.Double(
+                temp = new CustomShape(new Rectangle2D.Double(
                         Math.min(startPoint.x, endPoint.x),
                         Math.min(startPoint.y, endPoint.y),
                         Math.abs(startPoint.x - endPoint.x),
@@ -193,7 +194,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
                 ), shapeColor);
                 break;
             case ELLIPSE:
-                currentShape = new CustomShape(new Ellipse2D.Double(
+                temp = new CustomShape(new Ellipse2D.Double(
                         Math.min(startPoint.x, endPoint.x),
                         Math.min(startPoint.y, endPoint.y),
                         Math.abs(startPoint.x - endPoint.x),
@@ -202,7 +203,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
                 break;
             case SQUARE:
                 int side = Math.min(Math.abs(startPoint.x - endPoint.x), Math.abs(startPoint.y - endPoint.y));
-                currentShape = new CustomShape(new Rectangle2D.Double(
+                temp = new CustomShape(new Rectangle2D.Double(
                         Math.min(startPoint.x, startPoint.x + side),
                         Math.min(startPoint.y, startPoint.y + side),
                         side,
@@ -211,7 +212,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
                 break;
             case CIRCLE:
                 int diameter = (int) Math.round(startPoint.distance(endPoint));
-                currentShape = new CustomShape(new Ellipse2D.Double(
+                temp = new CustomShape(new Ellipse2D.Double(
                         startPoint.x - diameter,
                         startPoint.y - diameter,
                         diameter * 2,
@@ -222,9 +223,9 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
                 break;
         }
         //if (status=="Pressed"){history.historyLine.add(history.new HistoryInstance(mode,currentShape) );}
-        shapes.add(currentShape);
-        if(status=="Released"){history.historyLine.add(history.new HistoryDraw(currentShape));} // status == "Released"
-        currentShape = null;
+        shapes.add(temp);
+        if(status=="Released"){history.historyLine.add(history.new HistoryDraw(temp));} // status == "Released"
+        temp = null;
         repaint();
     }
     
@@ -423,6 +424,7 @@ class DrawingPanel extends JPanel implements MouseMotionListener, MouseListener,
         System.out.println("press");
         startPoint = e.getPoint();
         if (mode == DrawingMode.SELECT) {
+            currentShape=null;
             hasReleased=false;
             boolean found=false;
             for (CustomShape shape : shapes) {
