@@ -22,6 +22,24 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
     private List<baseObj> baseObjs;
     private List<baseObj> selectedObjs;
     private List<baseObj> tempRenderObjs;
+    private List<baseObj> copyObjs;
+
+    public void copy() {
+        // copy the selected objects into the copyObjs array
+        for (baseObj o : selectedObjs) {
+            copyObjs.add(o.copy());
+        }
+    }
+
+    public void paste() {
+        // paste the copied objests to the panel
+        for (baseObj o : copyObjs) {
+            o.translate(10, 10); // add aoffset
+            baseObjs.add(o);
+        }
+        copyObjs.clear();
+        repaint();
+    }
 
     public void cut() {
         // delte the selected objects
@@ -38,11 +56,9 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
 
     public void debug() {
         System.out.println("selectedObjs.size:" + selectedObjs.size());
-        for (baseObj o : selectedObjs) {
-            System.out.println(o);
-        }
         System.out.println("baseObjs.size:" + baseObjs.size());
         System.out.println("tempRenderObjs.size:" + tempRenderObjs.size());
+        System.out.println("copyObjs.size:" + copyObjs.size());
     }
 
     public void addTempRenderObj(baseObj o) {
@@ -112,6 +128,7 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         this.baseObjs = new ArrayList<baseObj>();
         this.selectedObjs = new ArrayList<baseObj>();
         this.tempRenderObjs = new ArrayList<baseObj>();
+        this.copyObjs = new ArrayList<baseObj>();
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
     }
@@ -121,6 +138,7 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         this.baseObjs = new ArrayList<baseObj>();
         this.selectedObjs = new ArrayList<baseObj>();
         this.tempRenderObjs = new ArrayList<baseObj>();
+        this.copyObjs = new ArrayList<baseObj>();
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
     }
@@ -130,6 +148,7 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         baseObjs.clear();
         selectedObjs.clear();
         tempRenderObjs.clear();
+        copyObjs.clear();
         repaint();
     }
 
