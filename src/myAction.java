@@ -2,7 +2,7 @@ import java.util.List;
 
 // Enum to define the type of action
 enum ActionType {
-    ADD, REMOVE, MODIFY, GROUP, UNGROUP, COPY, PASTE
+    ADD, REMOVE, MODIFY, GROUP, UNGROUP, COPY, PASTE, MOVE
 }
 
 // Action class to represent an operation

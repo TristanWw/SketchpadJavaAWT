@@ -101,12 +101,12 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         System.out.println("++++++++++++++++");
         for (Action a : redoStack) {
             System.out.print(
-                    "redoStack-> newstate size:" + a.newState.size() + " originalstate size:" + a.originalState.size());
+                    "redoStack-> newstate size:" + a.newState.size() + " originalstate size:" + a.originalState.size() + " ActionType:" + a.type);
             System.out.println("");
         }
         for (Action a : undoStack) {
             System.out.print(
-                    "undoStack-> newstate size:" + a.newState.size() + " originalstate size:" + a.originalState.size());
+                    "undoStack-> newstate size:" + a.newState.size() + " originalstate size:" + a.originalState.size() + " ActionType:" + a.type);
             System.out.println("");
         }
         System.out.println("===============");
@@ -271,9 +271,14 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
 
     void addObj(baseObj o) {
         System.out.println("add obj to baseObjs array");
-        List<baseObj> originalState = new ArrayList<>(baseObjs);
+        List<baseObj> originalState = new ArrayList<>();
+        List<baseObj> newState = new ArrayList<>();
+        for (baseObj o2: baseObjs) {
+            originalState.add(o2.copy());
+            newState.add(o2.copy());
+        }
         this.baseObjs.add(o);
-        List<baseObj> newState = new ArrayList<>(baseObjs);
+        newState.add(o.copy());
         undoStack.push(new Action(originalState, newState, ActionType.ADD));
         redoStack.clear(); // Clear redo stack whenever a new action is performed
         repaint();
@@ -298,7 +303,12 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         System.out.println("remove obj from selectedObjs array");
         this.selectedObjs.remove(o);
     }
-
+    
+    void addAction(List<baseObj> os, List<baseObj> ns, ActionType at) {
+        undoStack.push(new Action(os, ns, at));
+        redoStack.clear(); // Clear redo stack whenever a new action is performed
+    }
+    
     baseObj getLastObj() {
         return baseObjs.get(baseObjs.size() - 1);
     }

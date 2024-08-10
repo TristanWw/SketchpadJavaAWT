@@ -463,23 +463,33 @@ class LineHandler implements DrawingModeHandler, Serializable {
 class SelectHandler implements DrawingModeHandler, Serializable {
     private myPanel panel;
     private Point startPoint;
-
+    private List<baseObj> pressedObjs;
+    private boolean hasDragged;
+    private boolean hasFound;
+    
     public SelectHandler(myPanel panel) {
         this.panel = panel;
+        this.pressedObjs = new ArrayList<baseObj>();
     }
 
     @Override
     public void myMousePressed(MouseEvent e) {
         // record the start point
         startPoint = e.getPoint();
+        hasDragged = false;
+        hasFound = false;
+        pressedObjs.clear();
         // judge the current point
         for (baseObj o : panel.getBaseObjs()) {
-            if (o.contains(startPoint, 0, 0)) {
+            if (o.contains(startPoint, 0, 0)) { // found one obj
+                hasFound = true;
                 if (!panel.getSelectedObjs().contains(o)) {
                     // add to the list if not in it
                     panel.addSelect(o);
                 }
+                //break;
             }
+            this.pressedObjs.add(o.copy());
         }
         panel.repaint();
     }
@@ -493,11 +503,19 @@ class SelectHandler implements DrawingModeHandler, Serializable {
         }
         startPoint = e.getPoint();
         panel.repaint();
+        hasDragged = true;
     }
 
     @Override
     public void myMouseReleased(MouseEvent e) {
         // No additional translation needed here
+        List<baseObj> releasedObjs = new ArrayList<>();
+        if (hasDragged && hasFound) {
+            for (baseObj o : panel.getBaseObjs()) {
+                releasedObjs.add(o.copy());
+            }
+            panel.addAction(this.pressedObjs, releasedObjs, ActionType.MOVE);
+        }
         panel.repaint();
     }
 
