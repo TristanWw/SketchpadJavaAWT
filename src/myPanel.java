@@ -325,16 +325,18 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         // draw the objs
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
         for (baseObj o : baseObjs) {
-            o.draw(g, 0, 0);
+            o.draw(g2, 0, 0);
         }
         // draw the select highlight surroundings
         for (baseObj o : selectedObjs) {
-            o.gradient(g, 0, 0);
+            o.gradient(g2, 0, 0);
         }
         // render the drawing process
         for (baseObj o : tempRenderObjs) {
-            o.draw(g, 0, 0);
+            o.draw(g2, 0, 0);
         }
     }
 

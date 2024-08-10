@@ -483,13 +483,18 @@ class SelectHandler implements DrawingModeHandler, Serializable {
         for (baseObj o : panel.getBaseObjs()) {
             if (o.contains(startPoint, 0, 0)) { // found one obj
                 hasFound = true;
-                if (!panel.getSelectedObjs().contains(o)) {
+                if (panel.getSelectedObjs().contains(o)) {
                     // add to the list if not in it
+                    panel.removeSelect(o);
+                }else {
                     panel.addSelect(o);
                 }
                 //break;
             }
             this.pressedObjs.add(o.copy());
+        }
+        if (!hasFound) {
+            panel.getSelectedObjs().clear();
         }
         panel.repaint();
     }
@@ -523,22 +528,6 @@ class SelectHandler implements DrawingModeHandler, Serializable {
     public void myMouseClicked(MouseEvent e) {
         boolean blankSpot = true;
         Point p = e.getPoint();
-        // judge the current point
-        for (baseObj o : panel.getBaseObjs()) {
-            if (o.contains(p, 0, 0)) {
-                blankSpot = false;
-                if (panel.getSelectedObjs().contains(o)) {
-                    // remove if already in the list
-                    panel.removeSelect(o);
-                } else {
-                    // add to the list if not in it
-                    panel.addSelect(o);
-                }
-            }
-        }
-        if (blankSpot) {
-            panel.getSelectedObjs().clear();
-        }
         panel.resetTempRenderList();
         panel.repaint();
     }
