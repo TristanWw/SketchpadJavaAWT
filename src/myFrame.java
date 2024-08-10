@@ -57,7 +57,7 @@ public class myFrame extends JFrame implements ActionListener {
         ungroup.addActionListener(this);
         cut.addActionListener(this);
         copy.addActionListener(this);
-        paste.addActionListener(this);
+        paste.addActionListener(e -> drawPanel.setMode(DrawingMode.PASTE));
         undo.addActionListener(this);
         redo.addActionListener(this);
         menu2.add(group);
@@ -190,9 +190,9 @@ public class myFrame extends JFrame implements ActionListener {
             case "Copy":
                 drawPanel.copy();
                 break;
-            case "Paste":
+            /*case "Paste":
                 drawPanel.paste();
-                break;
+                break;*/
             case "Undo":
                 drawPanel.undo();
                 break;

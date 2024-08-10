@@ -16,7 +16,8 @@ enum DrawingMode {
     CIRCLE,
     CLOSEPOLYGON,
     OPENPOLYGON,
-    SELECT
+    SELECT,
+    PASTE
 }
 
 public class myPanel extends JPanel implements MouseMotionListener, MouseListener {
@@ -72,7 +73,6 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         List<baseObj> newState = new ArrayList<>(baseObjs);
         undoStack.push(new Action(originalState, newState, ActionType.ADD));
         redoStack.clear(); // Clear redo stack whenever a new action is performed
-        copyObjs.clear();
         repaint();
     }
 
@@ -262,9 +262,10 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
                 modeHandler = new ClosePolygonHandler(this);
                 break;
             case SELECT:
-                selectedObjs.clear();
-                repaint();
                 modeHandler = new SelectHandler(this);
+                break;
+            case PASTE:
+                modeHandler = new PasteHandler(this);
                 break;
         }
     }
@@ -274,8 +275,9 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         List<baseObj> originalState = new ArrayList<>();
         List<baseObj> newState = new ArrayList<>();
         for (baseObj o2: baseObjs) {
-            originalState.add(o2.copy());
-            newState.add(o2.copy());
+            baseObj o3 = o2.copy();
+            originalState.add(o3);
+            newState.add(o3);
         }
         this.baseObjs.add(o);
         newState.add(o.copy());
@@ -319,6 +321,10 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
 
     List<baseObj> getSelectedObjs() {
         return selectedObjs;
+    }
+    
+    List<baseObj> getCopyObjs() {
+        return copyObjs;
     }
 
     @Override

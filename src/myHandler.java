@@ -500,11 +500,16 @@ class SelectHandler implements DrawingModeHandler, Serializable {
     private Point startPoint;
     private List<baseObj> pressedObjs;
     private boolean hasDragged;
-    private boolean hasFound;
+    //private boolean hasFound;
+    private boolean hasSelected;
+    private baseObj currentObj;
     
     public SelectHandler(myPanel panel) {
         this.panel = panel;
         this.pressedObjs = new ArrayList<baseObj>();
+        //this.hasFound=false;
+        this.hasDragged=false;
+        this.hasSelected=false;
     }
 
     @Override
@@ -512,21 +517,25 @@ class SelectHandler implements DrawingModeHandler, Serializable {
         // record the start point
         startPoint = e.getPoint();
         hasDragged = false;
-        hasFound = false;
+        //hasFound = false;
+        hasSelected = false;
         pressedObjs.clear();
+        currentObj = null;
         // judge the current point
         for (baseObj o : panel.getBaseObjs()) {
             if (o.contains(startPoint, 0, 0)) { // found one obj
-                hasFound = true;
+                //hasFound = true;
+                currentObj=o;
                 if (!panel.getSelectedObjs().contains(o)) {
-                    // add to the list if not in it
+                    // add to the list if not in it, hasSelected=false
                     panel.addSelect(o);
-                //break;
+                }else {
+                    hasSelected = true;
                 }
             }
             this.pressedObjs.add(o.copy());
         }
-        if (!hasFound) {
+        if (currentObj==null) {
             panel.getSelectedObjs().clear();
         }
         panel.repaint();
@@ -548,40 +557,74 @@ class SelectHandler implements DrawingModeHandler, Serializable {
     public void myMouseReleased(MouseEvent e) {
         // No additional translation needed here
         List<baseObj> releasedObjs = new ArrayList<>();
-        if (hasDragged && hasFound) {
+        if (hasDragged && currentObj!=null) {
             for (baseObj o : panel.getBaseObjs()) {
                 releasedObjs.add(o.copy());
             }
             panel.addAction(this.pressedObjs, releasedObjs, ActionType.MOVE);
         }
-        if (panel.getSelectedObjs().size()>0) {
-            panel.getSelectedObjs().remove(panel.getSelectedObjs().size()-1);
+        if (hasSelected==false) {
+            panel.getSelectedObjs().remove(currentObj);
         }
         panel.repaint();
     }
 
     @Override
     public void myMouseClicked(MouseEvent e) {
-        boolean blankSpot = true;
-        Point p = e.getPoint();
-        // judge the current point
-        for (baseObj o : panel.getBaseObjs()) {
-            if (o.contains(p, 0, 0)) {
-                blankSpot = false;
-                if (panel.getSelectedObjs().contains(o)) {
-                    // remove if already in the list
-                    panel.removeSelect(o);
-                } else {
-                    // add to the list if not in it
-                    panel.addSelect(o);
-                }
-            }
-        }
-        if (blankSpot) {
-            panel.getSelectedObjs().clear();
+        /*if (currentObj!=null) {
+            panel.getSelectedObjs().add(currentObj);
+        }*/
+        if (hasSelected==true) {
+            panel.getSelectedObjs().remove(currentObj);
+        }else if (currentObj!=null){
+            panel.getSelectedObjs().add(currentObj);
         }
         panel.resetTempRenderList();
         panel.repaint();
+    }
+
+}
+
+class PasteHandler implements DrawingModeHandler, Serializable {
+    private myPanel panel;
+
+    public PasteHandler(myPanel panel) {
+        this.panel = panel;
+    }
+
+    @Override
+    public void myMouseClicked(MouseEvent e) {
+        // Do nothing for now
+    }
+
+    @Override
+    public void myMouseDragged(MouseEvent e) {
+        // nothing
+    }
+
+    @Override
+    public void myMousePressed(MouseEvent e) {
+        List<baseObj> originalState = new ArrayList<>();
+        List<baseObj> newState = new ArrayList<>();
+        for (baseObj o: panel.getBaseObjs()) {
+            baseObj o2 = o.copy();
+            originalState.add(o2);
+            newState.add(o2);
+        }
+        for (baseObj o : panel.getCopyObjs()) {
+            baseObj o2=o.copy();
+            o2.translate(e.getPoint().getX()-o.getBounds().x, e.getPoint().getY()-o.getBounds().y); // add aoffset
+            panel.getBaseObjs().add(o2);
+            newState.add(o2.copy());
+        }
+        panel.addAction(originalState, newState, ActionType.PASTE);
+        
+        panel.repaint();
+    }
+
+    @Override
+    public void myMouseReleased(MouseEvent e) {
+        // nothing
     }
 
 }
