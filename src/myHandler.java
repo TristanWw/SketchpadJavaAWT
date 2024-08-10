@@ -153,9 +153,11 @@ class CircleHandler implements DrawingModeHandler, Serializable {
     private myPanel panel;
     private Point startPoint;
     private Circle currentCircle;
+    private boolean hasDragged;
 
     public CircleHandler(myPanel panel) {
         this.panel = panel;
+        this.hasDragged=false;
     }
 
     @Override
@@ -166,6 +168,7 @@ class CircleHandler implements DrawingModeHandler, Serializable {
     @Override
     public void myMouseDragged(MouseEvent e) {
         if (currentCircle != null) {
+            hasDragged=true;
             Point endPoint = e.getPoint();
             panel.resetTempRenderList();
             // Update the current circle's size based on drag
@@ -180,6 +183,7 @@ class CircleHandler implements DrawingModeHandler, Serializable {
     public void myMousePressed(MouseEvent e) {
         // Start drawing a new circle
         startPoint = e.getPoint();
+        hasDragged=false;
         currentCircle = new Circle(startPoint, startPoint); // Initially, it's a point
         currentCircle.setColor(panel.getPanelColor());
         panel.addTempRenderObj(currentCircle);
@@ -194,7 +198,9 @@ class CircleHandler implements DrawingModeHandler, Serializable {
             currentCircle = new Circle(startPoint, endPoint);
             currentCircle.setColor(panel.getPanelColor());
             // Possibly add the finalized circle to a list of shapes, if needed
-            panel.addObj(currentCircle);
+            if (hasDragged==true) {
+                panel.addObj(currentCircle);
+            }
             panel.repaint();
             currentCircle = null; // Reset the current circle
         }
@@ -206,9 +212,11 @@ class EclipseHandler implements DrawingModeHandler, Serializable {
     private myPanel panel;
     private Point startPoint;
     private Eclipse currentEclipse;
+    private boolean hasDragged;
 
     public EclipseHandler(myPanel panel) {
         this.panel = panel;
+        this.hasDragged=false;
     }
 
     @Override
@@ -219,6 +227,7 @@ class EclipseHandler implements DrawingModeHandler, Serializable {
     @Override
     public void myMouseDragged(MouseEvent e) {
         if (currentEclipse != null) {
+            hasDragged=true;
             Point endPoint = e.getPoint();
             panel.resetTempRenderList();
             // Update the current eclipse's size based on drag
@@ -233,6 +242,7 @@ class EclipseHandler implements DrawingModeHandler, Serializable {
     public void myMousePressed(MouseEvent e) {
         // Start drawing a new eclipse
         startPoint = e.getPoint();
+        hasDragged=false;
         currentEclipse = new Eclipse(startPoint, startPoint); // Initially, it's a point
         currentEclipse.setColor(panel.getPanelColor());
         panel.addTempRenderObj(currentEclipse);
@@ -247,7 +257,9 @@ class EclipseHandler implements DrawingModeHandler, Serializable {
             currentEclipse = new Eclipse(startPoint, endPoint);
             currentEclipse.setColor(panel.getPanelColor());
             // Possibly add the finalized eclipse to a list of shapes, if needed
-            panel.addObj(currentEclipse);
+            if (hasDragged==true){
+                panel.addObj(currentEclipse);
+            }
             panel.repaint();
             currentEclipse = null; // Reset the current eclipse
         }
@@ -259,9 +271,11 @@ class SquareHandler implements DrawingModeHandler, Serializable {
     private myPanel panel;
     private Point startPoint;
     private Square currentSquare;
+    private boolean hasDragged;
 
     public SquareHandler(myPanel panel) {
         this.panel = panel;
+        this.hasDragged = false;
     }
 
     @Override
@@ -272,6 +286,7 @@ class SquareHandler implements DrawingModeHandler, Serializable {
     @Override
     public void myMouseDragged(MouseEvent e) {
         if (currentSquare != null) {
+            hasDragged = true;
             Point endPoint = e.getPoint();
             panel.resetTempRenderList();
             // Update the current square's size based on drag
@@ -286,6 +301,7 @@ class SquareHandler implements DrawingModeHandler, Serializable {
     public void myMousePressed(MouseEvent e) {
         // Start drawing a new square
         startPoint = e.getPoint();
+        hasDragged = false;
         currentSquare = new Square(startPoint, startPoint); // Initially, it's a point
         currentSquare.setColor(panel.getPanelColor());
         panel.addTempRenderObj(currentSquare);
@@ -300,7 +316,9 @@ class SquareHandler implements DrawingModeHandler, Serializable {
             currentSquare = new Square(startPoint, endPoint);
             currentSquare.setColor(panel.getPanelColor());
             // Possibly add the finalized square to a list of shapes, if needed
-            panel.addObj(currentSquare);
+            if (hasDragged==true) {
+                panel.addObj(currentSquare);
+            }
             panel.repaint();
             currentSquare = null; // Reset the current square
         }
@@ -312,6 +330,7 @@ class RectangleHandler implements DrawingModeHandler, Serializable {
     private myPanel panel;
     private Point startPoint;
     private Rectangle currentRectangle;
+    private boolean hasDragged;
 
     public RectangleHandler(myPanel panel) {
         this.panel = panel;
@@ -325,6 +344,7 @@ class RectangleHandler implements DrawingModeHandler, Serializable {
     @Override
     public void myMouseDragged(MouseEvent e) {
         if (currentRectangle != null) {
+            hasDragged = true;
             Point endPoint = e.getPoint();
             panel.resetTempRenderList();
             // Update the current rectangle's size based on drag
@@ -339,6 +359,7 @@ class RectangleHandler implements DrawingModeHandler, Serializable {
     public void myMousePressed(MouseEvent e) {
         // Start drawing a new rectangle
         startPoint = e.getPoint();
+        hasDragged = false;
         currentRectangle = new Rectangle(startPoint, startPoint); // Initially, it's a point
         currentRectangle.setColor(panel.getPanelColor());
         panel.addTempRenderObj(currentRectangle);
@@ -353,7 +374,9 @@ class RectangleHandler implements DrawingModeHandler, Serializable {
             currentRectangle = new Rectangle(startPoint, endPoint);
             currentRectangle.setColor(panel.getPanelColor());
             // Possibly add the finalized rectangle to a list of shapes, if needed
-            panel.addObj(currentRectangle);
+            if (hasDragged==true) {
+                panel.addObj(currentRectangle);
+            }
             panel.repaint();
             currentRectangle = null; // Reset the current rectangle
         }
@@ -366,14 +389,17 @@ class ScribbleHandler implements DrawingModeHandler, Serializable {
     private myPanel panel;
     private boolean isDrawingScribbledLine;
     private ScribbledLine sLine;
+    private boolean hasDragged;
 
     public ScribbleHandler(myPanel panel) {
         this.panel = panel;
+        this.hasDragged = false;
     }
 
     @Override
     public void myMousePressed(MouseEvent e) {
         isDrawingScribbledLine = true;
+        hasDragged = false;
         sLine = new ScribbledLine();
         sLine.setColor(panel.getPanelColor());
         sLine.addPoints(e.getPoint());
@@ -386,6 +412,7 @@ class ScribbleHandler implements DrawingModeHandler, Serializable {
     @Override
     public void myMouseDragged(MouseEvent e) {
         if (isDrawingScribbledLine) {
+            hasDragged = true;
             panel.resetTempRenderList();
             sLine.addPoints(e.getPoint());
             panel.addTempRenderObj(sLine);
@@ -399,7 +426,9 @@ class ScribbleHandler implements DrawingModeHandler, Serializable {
         if (sLine != null) {
             isDrawingScribbledLine = false;
             sLine.addPoints(e.getPoint());
-            panel.addObj(sLine);
+            if (hasDragged) {
+                panel.addObj(sLine);
+            }
             panel.repaint();
         }
         sLine = null;
@@ -415,14 +444,17 @@ class LineHandler implements DrawingModeHandler, Serializable {
     private myPanel panel;
     private boolean isDrawingLine;
     private Point startPoint, endPoint;
+    private boolean hasDragged;
 
     public LineHandler(myPanel panel) {
         this.panel = panel;
+        this.hasDragged = false;
     }
 
     @Override
     public void myMousePressed(MouseEvent e) {
         isDrawingLine = true;
+        hasDragged = false;
         startPoint = e.getPoint();
         endPoint = e.getPoint();
         // first add a line for drag update
@@ -435,6 +467,7 @@ class LineHandler implements DrawingModeHandler, Serializable {
     @Override
     public void myMouseDragged(MouseEvent e) {
         if (isDrawingLine) {
+            hasDragged = true;
             panel.resetTempRenderList();
             endPoint = e.getPoint();
             Line line = new Line(new Line2D.Double(startPoint, endPoint));
@@ -450,7 +483,9 @@ class LineHandler implements DrawingModeHandler, Serializable {
         endPoint = e.getPoint();
         Line line = new Line(new Line2D.Double(startPoint, endPoint));
         line.setColor(panel.getPanelColor());
-        panel.addObj(line);
+        if (hasDragged)  {
+            panel.addObj(line);
+        }
         panel.repaint();
         panel.resetTempRenderList();
     }
@@ -483,13 +518,11 @@ class SelectHandler implements DrawingModeHandler, Serializable {
         for (baseObj o : panel.getBaseObjs()) {
             if (o.contains(startPoint, 0, 0)) { // found one obj
                 hasFound = true;
-                if (panel.getSelectedObjs().contains(o)) {
+                if (!panel.getSelectedObjs().contains(o)) {
                     // add to the list if not in it
-                    panel.removeSelect(o);
-                }else {
                     panel.addSelect(o);
-                }
                 //break;
+                }
             }
             this.pressedObjs.add(o.copy());
         }
@@ -521,6 +554,9 @@ class SelectHandler implements DrawingModeHandler, Serializable {
             }
             panel.addAction(this.pressedObjs, releasedObjs, ActionType.MOVE);
         }
+        if (panel.getSelectedObjs().size()>0) {
+            panel.getSelectedObjs().remove(panel.getSelectedObjs().size()-1);
+        }
         panel.repaint();
     }
 
@@ -528,6 +564,22 @@ class SelectHandler implements DrawingModeHandler, Serializable {
     public void myMouseClicked(MouseEvent e) {
         boolean blankSpot = true;
         Point p = e.getPoint();
+        // judge the current point
+        for (baseObj o : panel.getBaseObjs()) {
+            if (o.contains(p, 0, 0)) {
+                blankSpot = false;
+                if (panel.getSelectedObjs().contains(o)) {
+                    // remove if already in the list
+                    panel.removeSelect(o);
+                } else {
+                    // add to the list if not in it
+                    panel.addSelect(o);
+                }
+            }
+        }
+        if (blankSpot) {
+            panel.getSelectedObjs().clear();
+        }
         panel.resetTempRenderList();
         panel.repaint();
     }
