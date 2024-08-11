@@ -152,6 +152,10 @@ class OpenPolygon extends baseObj {
     }
 
     public List<Point> getPoints() {
-        return new ArrayList<>(points); // Return a copy to avoid external modification
+        List<Point> temp = new ArrayList<Point>();
+        for (Point p: points) {
+            temp.add(new Point(p.x,p.y));
+        }
+        return temp; // Return a copy to avoid external modification
     }
 }
