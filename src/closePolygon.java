@@ -84,6 +84,10 @@ class ClosePolygon extends baseObj {
 
     @Override
     baseObj copy() {
-        return new ClosePolygon(new ArrayList<>(points));
+        List<Point> temp = new ArrayList<>();
+        for (Point p: points) {
+            temp.add(new Point(p.x,p.y));
+        }
+        return new ClosePolygon(new ArrayList<>(temp));
     }
 }
