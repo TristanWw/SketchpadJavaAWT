@@ -17,7 +17,9 @@ enum DrawingMode {
     CLOSEPOLYGON,
     OPENPOLYGON,
     SELECT,
-    PASTE
+    PASTE,
+    GROUP,
+    UNGROUP
 }
 
 public class myPanel extends JPanel implements MouseMotionListener, MouseListener {
@@ -29,14 +31,19 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
     private List<baseObj> tempRenderObjs;
     private List<baseObj> copyObjs;
     // Stack to store undo and redo actions
-    private Stack<Action> undoStack;
+    public Stack<Action> undoStack;
     private Stack<Action> redoStack;
 
     public void undo() {
         selectedObjs.clear();
         if (!undoStack.isEmpty()) {
-            Action lastAction = undoStack.pop();
-            redoStack.push(new Action(new ArrayList<>(baseObjs), lastAction.originalState, lastAction.type));
+            Action lastAction = undoStack.pop();        
+            List<baseObj> temp = new ArrayList<>();
+            for (baseObj o : getBaseObjs()) {
+                temp.add(o.copy());
+            }
+            redoStack.push(lastAction);
+            //redoStack.push(new Action(temp, lastAction.originalState, lastAction.type));
             baseObjs.clear();
             baseObjs.addAll(lastAction.originalState);
             repaint();
@@ -47,9 +54,14 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         selectedObjs.clear();
         if (!redoStack.isEmpty()) {
             Action lastAction = redoStack.pop();
-            undoStack.push(new Action(new ArrayList<>(baseObjs), lastAction.newState, lastAction.type));
+            List<baseObj> temp = new ArrayList<>();
+            for (baseObj o : getBaseObjs()) {
+                temp.add(o.copy());
+            }
+            undoStack.push(lastAction);
+            //undoStack.push(new Action(temp, lastAction.newState, lastAction.type));
             baseObjs.clear();
-            baseObjs.addAll(lastAction.originalState);
+            baseObjs.addAll(lastAction.newState);
             repaint();
         }
     }
@@ -114,6 +126,11 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
             System.out.println("");
         }
         for (Action a : undoStack) {
+            if(a.originalState.size()>0) {
+                for (baseObj b:a.originalState)
+                System.out.println(b.getBounds().x);
+            }
+            
             System.out.print(
                     "undoStack-> newstate size:" + a.newState.size() + " originalstate size:" + a.originalState.size() + " ActionType:" + a.type);
             System.out.println("");
@@ -129,7 +146,7 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         tempRenderObjs.clear();
     }
 
-    public void groupSelectedObjs() {
+    /*public void groupSelectedObjs() {
         // put selected objects into one object and then put into the array
         System.out.println("grouped obj add to baseObjs array");
         List<baseObj> originalState = new ArrayList<>(baseObjs);
@@ -142,16 +159,16 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         baseObjs.add(g);
         selectedObjs.clear();
         List<baseObj> newState = new ArrayList<>(baseObjs);
-        undoStack.push(new Action(originalState, newState, ActionType.ADD));
-        redoStack.clear(); // Clear redo stack whenever a new action is performed
+        //undoStack.push(new Action(originalState, newState, ActionType.ADD));
+        //redoStack.clear(); // Clear redo stack whenever a new action is performed
 
         // System.out.println("selectedObjs.size:" + selectedObjs.size());
         // System.out.println("baseObjs.size:" + baseObjs.size());
         setMode(DrawingMode.SELECT);
         repaint();
-    }
+    }*/
 
-    public void ungroupSelectedObjs() {
+    /*public void ungroupSelectedObjs() {
         // ungroup the selected groupBaseobjs object and rejoin the array
         System.out.println("grouped obj removed to baseObjs array");
         List<baseObj> originalState = new ArrayList<>(baseObjs);
@@ -176,7 +193,7 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         // System.out.println("baseObjs.size:" + baseObjs.size());
         setMode(DrawingMode.SELECT);
         repaint();
-    }
+    }*/
 
     public void resetBeforeSave() {
         // restore the default select mode
@@ -275,6 +292,12 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
                 break;
             case PASTE:
                 modeHandler = new PasteHandler(this);
+                break;
+            case GROUP:
+                modeHandler = new GroupHandler(this);
+                break;
+            case UNGROUP:
+                modeHandler = new UngroupHandler(this);
                 break;
         }
     }

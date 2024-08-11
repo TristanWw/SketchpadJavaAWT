@@ -53,8 +53,8 @@ public class myFrame extends JFrame implements ActionListener {
         JMenuItem paste = new JMenuItem("Paste");
         JMenuItem undo = new JMenuItem("Undo");
         JMenuItem redo = new JMenuItem("Redo");
-        group.addActionListener(this);
-        ungroup.addActionListener(this);
+        group.addActionListener(e -> drawPanel.setMode(DrawingMode.GROUP));
+        ungroup.addActionListener(e -> drawPanel.setMode(DrawingMode.UNGROUP));
         cut.addActionListener(this);
         copy.addActionListener(this);
         paste.addActionListener(e -> drawPanel.setMode(DrawingMode.PASTE));
@@ -178,12 +178,12 @@ public class myFrame extends JFrame implements ActionListener {
                 // Load from the file and substitute the object
                 loadFromFile();
                 break;
-            case "Group":
+            /*case "Group":
                 drawPanel.groupSelectedObjs();
                 break;
             case "Ungroup":
                 drawPanel.ungroupSelectedObjs();
-                break;
+                break;*/
             case "Cut":
                 drawPanel.cut();
                 break;
