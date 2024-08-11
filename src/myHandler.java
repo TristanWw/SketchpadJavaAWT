@@ -611,9 +611,19 @@ class PasteHandler implements DrawingModeHandler, Serializable {
             originalState.add(o2);
             newState.add(o2);
         }
+        int dx=0,dy=0, xMin=999999;
+        Point point = e.getPoint();
+        for (baseObj o : panel.getCopyObjs()) {
+            if(o.getBounds().x<xMin){
+                xMin = o.getBounds().x;
+                dx = point.x-xMin;
+                dy = point.y-o.getBounds().y;
+            }
+        }
+        
         for (baseObj o : panel.getCopyObjs()) {
             baseObj o2=o.copy();
-            o2.translate(e.getPoint().getX()-o.getBounds().x, e.getPoint().getY()-o.getBounds().y); // add aoffset
+            o2.translate(dx, dy); // add aoffset
             panel.getBaseObjs().add(o2);
             newState.add(o2.copy());
         }

@@ -62,7 +62,7 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         }
     }
 
-    public void paste() {
+    /*public void paste() {
         // paste the copied objests to the panel
         System.out.println("paste obj to baseObjs array");
         List<baseObj> originalState = new ArrayList<>(baseObjs);
@@ -74,17 +74,23 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         undoStack.push(new Action(originalState, newState, ActionType.ADD));
         redoStack.clear(); // Clear redo stack whenever a new action is performed
         repaint();
-    }
+    }*/
 
     public void cut() {
-        // delte the selected objects
-        for (int i = 0; i < selectedObjs.size(); i++) {
-            baseObj o = selectedObjs.get(i);
-            if (baseObjs.contains(o)) {
-                // remove from baseObjs
-                removeObj(o);
+        // delete the selected objects
+        List<baseObj> originalState = new ArrayList<>();
+        List<baseObj> newState = new ArrayList<>();
+        for (baseObj o: baseObjs) {
+            baseObj o2 = o.copy();
+            if (selectedObjs.contains(o)) {
+                baseObjs.remove(o);
+            }else {
+                newState.add(o2);
             }
+            originalState.add(o2);
         }
+        undoStack.push(new Action(originalState, newState, ActionType.REMOVE));
+        redoStack.clear(); // Clear redo stack whenever a new action is performed
         selectedObjs.clear();
         repaint();
     }
@@ -282,16 +288,6 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         this.baseObjs.add(o);
         newState.add(o.copy());
         undoStack.push(new Action(originalState, newState, ActionType.ADD));
-        redoStack.clear(); // Clear redo stack whenever a new action is performed
-        repaint();
-    }
-
-    void removeObj(baseObj o) {
-        System.out.println("remove obj from baseObjs array");
-        List<baseObj> originalState = new ArrayList<>(baseObjs);
-        this.baseObjs.remove(o);
-        List<baseObj> newState = new ArrayList<>(baseObjs);
-        undoStack.push(new Action(originalState, newState, ActionType.REMOVE));
         redoStack.clear(); // Clear redo stack whenever a new action is performed
         repaint();
     }
