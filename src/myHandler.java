@@ -523,14 +523,15 @@ class SelectHandler implements DrawingModeHandler, Serializable {
         currentObj = null;
         // judge the current point
         for (baseObj o : panel.getBaseObjs()) {
-            if (o.contains(startPoint, 0, 0)) { // found one obj
-                //hasFound = true;
-                currentObj=o;
-                if (!panel.getSelectedObjs().contains(o)) {
-                    // add to the list if not in it, hasSelected=false
-                    panel.addSelect(o);
-                }else {
-                    hasSelected = true;
+            if (currentObj==null) { // not found yet
+                if (o.contains(startPoint, 0, 0)) { // found one obj
+                    currentObj=o; // once found, set indicator
+                    if (!panel.getSelectedObjs().contains(o)) {
+                        // add to the list if not in it, hasSelected=false
+                        panel.addSelect(o);
+                    }else {
+                        hasSelected = true;
+                   }
                 }
             }
             this.pressedObjs.add(o.copy());

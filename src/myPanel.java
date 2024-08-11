@@ -82,13 +82,16 @@ public class myPanel extends JPanel implements MouseMotionListener, MouseListene
         List<baseObj> newState = new ArrayList<>();
         for (baseObj o: baseObjs) {
             baseObj o2 = o.copy();
-            if (selectedObjs.contains(o)) {
-                baseObjs.remove(o);
-            }else {
+            if (!(selectedObjs.contains(o))) {
                 newState.add(o2);
             }
             originalState.add(o2);
         }
+        for (baseObj o : selectedObjs){
+            copyObjs.add(o.copy());
+            baseObjs.remove(o);
+        }
+        //baseObjs.remove(selectedObjs);
         undoStack.push(new Action(originalState, newState, ActionType.REMOVE));
         redoStack.clear(); // Clear redo stack whenever a new action is performed
         selectedObjs.clear();
